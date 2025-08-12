@@ -1,17 +1,3 @@
-// import React from "react";
-
-// const Shape = () => {
-//   return (
-//     <>
-//       <div>Shape</div>
-//     </>
-//   );
-// };
-
-// export default Shape;
-
-// ---version 2::---------------
-
 import React from "react";
 
 const Shape = ({ w = 100, h = 100, radius = "5px", padding, children }) => {
@@ -34,7 +20,8 @@ export default Shape;
 
 /**
  *
- * So what happens when some body passes width we take that width and use the default styles  or if some body passes we use that style inside the style object
+ * So what happens when some body passes width we take that width and use the default style
+ *   or if some body passes we use that style inside the style object
  *
  *
  */
