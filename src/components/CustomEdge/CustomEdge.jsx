@@ -1,11 +1,9 @@
 import React from "react";
-import { getBezierPath } from "reactflow";
+import { BaseEdge, getBezierPath } from "reactflow";
 
 /**
- * Props:
+ * data options (passed via edge.data):
  * - dotted: boolean
- * - animated: boolean
- * - color: string
  * - arrow: boolean
  */
 export default function CustomEdge({
@@ -17,10 +15,10 @@ export default function CustomEdge({
   sourcePosition,
   targetPosition,
   style = {},
-  dotted = false,
-  animated = false,
-  arrow = false,
+  data = {},
 }) {
+  const { dotted = false, arrow = true } = data || {};
+
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
@@ -32,39 +30,35 @@ export default function CustomEdge({
 
   const strokeDasharray = dotted ? "6 6" : "0";
   const strokeColor = style.stroke || "#fff";
-  const markerId = `arrowhead-${id}`;
+
+  // unique marker per edge to avoid collisions
+  const markerId = `rf-arrow-${id}`;
 
   return (
     <>
-      {/* Arrowhead marker definition (unique per edge id to avoid collisions) */}
       {arrow && (
         <svg style={{ position: "absolute", width: 0, height: 0 }}>
           <defs>
             <marker
               id={markerId}
+              viewBox="0 0 10 10"
+              refX="9.2" // positions the tip at the end of the path
+              refY="5"
               markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
+              markerHeight="10"
               orient="auto"
-              markerUnits="strokeWidth"
             >
-              <polygon points="0 0, 10 3.5, 0 7" fill={strokeColor} />
+              <path d="M 0 0 L 10 5 L 0 10 z" fill={strokeColor} />
             </marker>
           </defs>
         </svg>
       )}
 
-      <path
-        d={edgePath}
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth={2}
-        strokeDasharray={strokeDasharray}
+      <BaseEdge
+        id={id}
+        path={edgePath}
+        style={{ stroke: strokeColor, strokeWidth: 2, strokeDasharray }}
         markerEnd={arrow ? `url(#${markerId})` : undefined}
-        style={
-          animated ? { animation: "dash 1.5s linear infinite" } : undefined
-        }
       />
     </>
   );

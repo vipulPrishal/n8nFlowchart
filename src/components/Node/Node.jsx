@@ -48,31 +48,44 @@ const Node = ({ data, children, isConnectable }) => {
       {isInFlow && data?.label === "AI Agent" && (
         <>
           <CustomHandle
+            id="ai-b1"
             type="source"
             position={Position.Bottom}
             isConnectable={isConnectable}
             shape="circle"
             size={8}
             color="#fff"
-            style={{ left: "25%" }}
+            style={{ left: "20%" }}
           />
           <CustomHandle
+            id="ai-b2"
             type="source"
             position={Position.Bottom}
             isConnectable={isConnectable}
             shape="circle"
             size={8}
             color="#fff"
-            style={{ left: "50%" }}
+            style={{ left: "40%" }}
           />
           <CustomHandle
+            id="ai-b3"
             type="source"
             position={Position.Bottom}
             isConnectable={isConnectable}
             shape="circle"
             size={8}
             color="#fff"
-            style={{ left: "75%" }}
+            style={{ left: "60%" }}
+          />
+          <CustomHandle
+            id="ai-b4"
+            type="source"
+            position={Position.Bottom}
+            isConnectable={isConnectable}
+            shape="circle"
+            size={8}
+            color="#fff"
+            style={{ left: "80%" }}
           />
         </>
       )}

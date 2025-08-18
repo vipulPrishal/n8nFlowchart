@@ -6,6 +6,7 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
   updateEdge,
+  useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import Node from "../Node/Node";
@@ -21,7 +22,7 @@ const initialNodes = [
   {
     id: "trigger",
     type: "custom",
-    position: { x: 40, y: 270 },
+    position: { x: -50, y: 300 },
     data: {
       content: <Shape w={340} h={120} radius="8px" />,
       label: "On 'Create User'\nform submission",
@@ -120,9 +121,7 @@ const initialEdges = [
     target: "ai-agent",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: true,
+    data: { arrow: true },
   },
   {
     id: "e-ai-conditional",
@@ -130,9 +129,7 @@ const initialEdges = [
     target: "conditional",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: true,
+    data: { arrow: true },
   },
   {
     id: "e-conditional-slack-add",
@@ -140,9 +137,7 @@ const initialEdges = [
     target: "slack-add",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: true,
+    data: { arrow: true },
   },
   {
     id: "e-conditional-slack-update",
@@ -150,57 +145,106 @@ const initialEdges = [
     target: "slack-update",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: true,
+    data: { arrow: true },
   },
 
-  // AI Agent dependencies (solid, no arrows)
+  // AI Agent dependencies from bottom handles
   {
     id: "e-ai-anthropic",
     source: "ai-agent",
+    sourceHandle: "ai-b1",
     target: "anthropic",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: false,
+    data: { arrow: true },
   },
   {
     id: "e-ai-postgres",
     source: "ai-agent",
+    sourceHandle: "ai-b2",
     target: "postgres",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: false,
+    data: { arrow: true },
   },
   {
     id: "e-ai-microsoft",
     source: "ai-agent",
+    sourceHandle: "ai-b3",
     target: "microsoft",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: false,
+    data: { arrow: true },
   },
   {
     id: "e-ai-jira",
     source: "ai-agent",
+    sourceHandle: "ai-b4",
     target: "jira",
     type: "custom",
     style: { stroke: "#fff" },
-    dotted: false,
-    animated: false,
-    arrow: false,
+    data: { arrow: true },
   },
 ];
+
+function DecisionBox({ w = 120, h = 120, label }) {
+  return (
+    <div
+      style={{
+        width: w,
+        height: h,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#fff",
+      }}
+    >
+      <div
+        style={{
+          width: w,
+          height: h,
+          transform: "rotate(45deg)",
+          border: "2px solid #fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            transform: "rotate(-45deg)",
+            textAlign: "center",
+            fontSize: 12,
+          }}
+        >
+          {label}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const makeContent = (spec) => {
+  const label = spec.label;
+  if (spec.shape === "circle")
+    return (
+      <Shape w={spec.w} h={spec.h} radius="50%">
+        {label}
+      </Shape>
+    );
+  if (spec.shape === "diamond")
+    return <DecisionBox w={spec.w} h={spec.h} label={label} />;
+  return (
+    <Shape w={spec.w} h={spec.h} radius={spec.radius || "8px"}>
+      {label}
+    </Shape>
+  );
+};
 
 export default function FlowChart() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const rf = useReactFlow();
 
   const onConnect = useCallback(
     (params) =>
@@ -210,9 +254,7 @@ export default function FlowChart() {
             ...params,
             type: "custom",
             style: { stroke: "#fff" },
-            dotted: false,
-            animated: false,
-            arrow: true,
+            data: { arrow: true },
           },
           eds
         )
@@ -226,8 +268,32 @@ export default function FlowChart() {
     [setEdges]
   );
 
+  const onDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const onDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      const raw = e.dataTransfer.getData("application/reactflow");
+      if (!raw) return;
+      const spec = JSON.parse(raw);
+      const pos = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+      const id = `n-${Date.now()}`;
+      const newNode = {
+        id,
+        type: "custom",
+        position: pos,
+        data: { content: makeContent(spec), label: spec.label },
+      };
+      setNodes((nds) => nds.concat(newNode));
+    },
+    [rf, setNodes]
+  );
+
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#1a1a1a" }}>
+    <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -237,6 +303,8 @@ export default function FlowChart() {
         onEdgeUpdate={onEdgeUpdate}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
         fitView
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
       >
