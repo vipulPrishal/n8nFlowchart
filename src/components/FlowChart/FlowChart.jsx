@@ -1,116 +1,4 @@
-// // ---version 1 :---- Now importing my nodes in the Flowchart.jsx and using them as the node3s of react flow---
-// // src/components/FlowChart/FlowChart.jsx
-// import React, { useCallback } from "react";
-// import ReactFlow, {
-//   Controls,
-//   Background,
-//   useNodesState,
-//   useEdgesState,
-//   addEdge,
-// } from "reactflow";
-// import "reactflow/dist/style.css";
-
-// import Node from "../Node/Node";
-// import Shape from "../Shape/Shape";
-
-// // ⭐⭐⭐We’ll use nodeTypes so that when a node’s type is "custom", it uses your Node + Shape setup.
-
-// /**
-//  * Use your existing Node component as the React Flow node renderer.
-//  * We put the Shape JSX inside data.content so Node can render it.
-//  */
-
-// // const nodeTypes = {
-// //   custom: ({ data }) => (
-// //     <Node>
-// //       <Shape w={data.w} h={data.h} radius={data.radius} padding={data.padding}>
-// //         {data.label}
-// //       </Shape>
-// //     </Node>
-// //   ),
-// // };
-
-// const nodeTypes = { custom: Node };
-
-// // ⭐⭐ Step 3 — Create your nodes array (here i can use my own nodes instead of relying on the dataof reactflow)
-
-// const initialNodes = [
-//   {
-//     id: "1",
-//     type: "custom",
-//     position: { x: 100, y: 100 },
-//     data: { content: <Shape w={100} h={100} radius="5px" /> },
-//   },
-//   {
-//     id: "2",
-//     type: "custom",
-//     position: { x: 320, y: 100 },
-//     data: { content: <Shape w={100} h={100} radius="50%" /> },
-//   },
-//   {
-//     id: "3",
-//     type: "custom",
-//     position: { x: 540, y: 100 },
-//     data: { content: <Shape w={250} h={100} radius="5px" /> },
-//   },
-//   {
-//     id: "4",
-//     type: "custom",
-//     position: { x: 760, y: 100 },
-//     data: {
-//       content: (
-//         <Shape w={25} h={25} radius="5px" padding>
-//           <span className="text-white text-[22px] font-bold flex items-center justify-center h-full">
-//             +
-//           </span>
-//         </Shape>
-//       ),
-//     },
-//   },
-// ];
-
-// const initialEdges = [
-//   {
-//     id: "e1-2",
-//     source: "1",
-//     target: "2",
-//     type: "smoothstep",
-//     style: { stroke: "#fff", strokeDasharray: "5,5" }, // dotted white
-//   },
-// ];
-
-// export default function FlowChart() {
-//   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-//   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
-//   // called when user drags from a handle to another and releases
-//   const onConnect = useCallback(
-//     (params) => setEdges((eds) => addEdge({ ...params }, eds)),
-//     [setEdges]
-//   );
-
-//   return (
-//     <div style={{ width: "100vw", height: "100vh", background: "#000" }}>
-//       <ReactFlow
-//         nodes={nodes}
-//         edges={edges}
-//         onNodesChange={onNodesChange}
-//         onEdgesChange={onEdgesChange}
-//         onConnect={onConnect}
-//         nodeTypes={nodeTypes}
-//         fitView
-//       >
-//         <Background gap={16} color="#222" />
-//         <Controls />
-//       </ReactFlow>
-//     </div>
-//   );
-// }
-
-// ----Version 2:--- Adding custom edges also -------------
-
 import React, { useCallback } from "react";
-
 import ReactFlow, {
   Controls,
   Background,
@@ -122,104 +10,191 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import Node from "../Node/Node";
 import Shape from "../Shape/Shape";
-import CustomEdge from "../CustomEdge/CustomEdge"; // add this import
-
-// ⭐⭐⭐We’ll use nodeTypes so that when a node’s type is "custom", it uses your Node + Shape setup.
-
-/**
- * Use your existing Node component as the React Flow node renderer.
- * We put the Shape JSX inside data.content so Node can render it.
- */
-
-// const nodeTypes = {
-//   custom: ({ data }) => (
-//     <Node>
-//       <Shape w={data.w} h={data.h} radius={data.radius} padding={data.padding}>
-//         {data.label}
-//       </Shape>
-//     </Node>
-//   ),
-// };
+import CustomEdge from "../CustomEdge/CustomEdge";
 
 const nodeTypes = { custom: Node };
-const edgeTypes = { custom: CustomEdge }; // Added custom edge types
-// ⭐⭐ Step 3 — Create your nodes array (here i can use my own nodes instead of relying on the dataof reactflow)
+const edgeTypes = { custom: CustomEdge };
 
+// Create nodes matching the workflow image
 const initialNodes = [
+  // Trigger Node (Leftmost)
   {
-    id: "1",
+    id: "trigger",
     type: "custom",
-    position: { x: 100, y: 100 },
-    data: { content: <Shape w={100} h={100} radius="5px" /> },
-  },
-  {
-    id: "2",
-    type: "custom",
-    position: { x: 320, y: 100 },
-    data: { content: <Shape w={100} h={100} radius="50%" /> },
-  },
-  {
-    id: "3",
-    type: "custom",
-    position: { x: 540, y: 100 },
-    data: { content: <Shape w={250} h={100} radius="5px" /> },
-  },
-  {
-    id: "4",
-    type: "custom",
-    position: { x: 760, y: 100 },
+    position: { x: 40, y: 270 },
     data: {
-      content: (
-        <Shape w={25} h={25} radius="5px" padding>
-          <span className="text-white text-[22px] font-bold flex items-center justify-center h-full">
-            +
-          </span>
-        </Shape>
-      ),
+      content: <Shape w={340} h={120} radius="8px" />,
+      label: "On 'Create User'\nform submission",
+    },
+  },
+
+  // AI Agent Node (Central)
+  {
+    id: "ai-agent",
+    type: "custom",
+    position: { x: 430, y: 150 },
+    data: {
+      content: <Shape w={540} h={180} radius="8px" />,
+      label: "AI Agent",
+    },
+  },
+
+  // Conditional Node (Middle-Right) - Rounded left side like a sign
+  {
+    id: "conditional",
+    type: "custom",
+    position: { x: 1050, y: 200 },
+    data: {
+      content: <Shape w={300} h={180} radius="100px 16px 16px 100px" />,
+      label: "Is\nmanager?",
+    },
+  },
+
+  // Slack Action Node (Top-Right)
+  {
+    id: "slack-add",
+    type: "custom",
+    position: { x: 1450, y: 60 },
+    data: {
+      content: <Shape w={360} h={120} radius="8px" />,
+      label: "Add to channel",
+    },
+  },
+
+  // Slack Action Node (Bottom-Right)
+  {
+    id: "slack-update",
+    type: "custom",
+    position: { x: 1450, y: 340 },
+    data: {
+      content: <Shape w={360} h={120} radius="8px" />,
+      label: "Update profile",
+    },
+  },
+
+  // AI Agent Dependencies (Below AI Agent) - Circles
+  {
+    id: "anthropic",
+    type: "custom",
+    position: { x: 520, y: 470 },
+    data: {
+      content: <Shape w={160} h={160} radius="50%" />,
+      label: "Anthropic\nChat\nModel",
+    },
+  },
+  {
+    id: "postgres",
+    type: "custom",
+    position: { x: 740, y: 470 },
+    data: {
+      content: <Shape w={160} h={160} radius="50%" />,
+      label: "Postgres\nChat\nMemory",
+    },
+  },
+  {
+    id: "microsoft",
+    type: "custom",
+    position: { x: 960, y: 470 },
+    data: {
+      content: <Shape w={160} h={160} radius="50%" />,
+      label: "Microsoft\nEntra ID",
+    },
+  },
+  {
+    id: "jira",
+    type: "custom",
+    position: { x: 1180, y: 470 },
+    data: {
+      content: <Shape w={160} h={160} radius="50%" />,
+      label: "Jira\nSoftware",
     },
   },
 ];
 
-// const initialEdges = [
-//   {
-//     id: "e1-2",
-//     source: "1",
-//     target: "2",
-//     type: "smoothstep",
-//     style: { stroke: "#fff", strokeDasharray: "5,5" }, // dotted white
-//   },
-// ];
-
+// Create edges matching the workflow connections
 const initialEdges = [
+  // Main workflow connections (solid with arrows)
   {
-    id: "e1-2",
-    source: "1",
-    target: "2",
-    type: "custom", // IMPORTANT: use your custom edge type
+    id: "e-trigger-ai",
+    source: "trigger",
+    target: "ai-agent",
+    type: "custom",
     style: { stroke: "#fff" },
-    dotted: true, // static dotted
+    dotted: false,
     animated: false,
-    arrow: true, // draw arrowhead at end
-  },
-  {
-    id: "e2-3",
-    source: "2",
-    target: "3",
-    type: "custom",
-    style: { stroke: "#0ff" },
-    dotted: true,
-    animated: true, // animated dashed
     arrow: true,
   },
   {
-    id: "e1-3",
-    source: "1",
-    target: "3",
+    id: "e-ai-conditional",
+    source: "ai-agent",
+    target: "conditional",
     type: "custom",
-    style: { stroke: "#ff0" },
-    dotted: false, // plain solid
+    style: { stroke: "#fff" },
+    dotted: false,
     animated: false,
     arrow: true,
+  },
+  {
+    id: "e-conditional-slack-add",
+    source: "conditional",
+    target: "slack-add",
+    type: "custom",
+    style: { stroke: "#fff" },
+    dotted: false,
+    animated: false,
+    arrow: true,
+  },
+  {
+    id: "e-conditional-slack-update",
+    source: "conditional",
+    target: "slack-update",
+    type: "custom",
+    style: { stroke: "#fff" },
+    dotted: false,
+    animated: false,
+    arrow: true,
+  },
+
+  // AI Agent dependencies (solid, no arrows)
+  {
+    id: "e-ai-anthropic",
+    source: "ai-agent",
+    target: "anthropic",
+    type: "custom",
+    style: { stroke: "#fff" },
+    dotted: false,
+    animated: false,
+    arrow: false,
+  },
+  {
+    id: "e-ai-postgres",
+    source: "ai-agent",
+    target: "postgres",
+    type: "custom",
+    style: { stroke: "#fff" },
+    dotted: false,
+    animated: false,
+    arrow: false,
+  },
+  {
+    id: "e-ai-microsoft",
+    source: "ai-agent",
+    target: "microsoft",
+    type: "custom",
+    style: { stroke: "#fff" },
+    dotted: false,
+    animated: false,
+    arrow: false,
+  },
+  {
+    id: "e-ai-jira",
+    source: "ai-agent",
+    target: "jira",
+    type: "custom",
+    style: { stroke: "#fff" },
+    dotted: false,
+    animated: false,
+    arrow: false,
   },
 ];
 
@@ -227,20 +202,14 @@ export default function FlowChart() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // called when user drags from a handle to another and releases
-  // const onConnect = useCallback(
-  //   (params) => setEdges((eds) => addEdge({ ...params }, eds)),
-  //   [setEdges]
-  // );
-
   const onConnect = useCallback(
     (params) =>
       setEdges((eds) =>
         addEdge(
           {
             ...params,
-            type: "custom", // use our custom edge
-            style: { stroke: "#fff" }, // default color
+            type: "custom",
+            style: { stroke: "#fff" },
             dotted: false,
             animated: false,
             arrow: true,
@@ -256,8 +225,9 @@ export default function FlowChart() {
       setEdges((els) => updateEdge(oldEdge, newConnection, els)),
     [setEdges]
   );
+
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#000" }}>
+    <div style={{ width: "100vw", height: "100vh", background: "#1a1a1a" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -268,8 +238,9 @@ export default function FlowChart() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
+        defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
       >
-        <Background gap={16} color="#222" />
+        <Background gap={20} color="#333" />
         <Controls />
       </ReactFlow>
     </div>

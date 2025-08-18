@@ -18,11 +18,21 @@ const CustomHandle = ({
   // Giving custom styles for different shapes to achieve a diamond shape when the user
   //  pases shape as
   const shapeStyles = {
-    circle: { borderRadius: "50%" },
-    square: { borderRadius: "5px" },
+    circle: {
+      borderRadius: "50%",
+      border: `2px solid ${color}`,
+      background: "transparent",
+    },
+    square: {
+      borderRadius: "2px",
+      border: `2px solid ${color}`,
+      background: "transparent",
+    },
     diamond: {
       transform: "rotate(45deg)",
-      borderRadius: "0px",
+      borderRadius: "2px",
+      border: `2px solid ${color}`,
+      background: "transparent",
     },
   };
 
@@ -31,13 +41,9 @@ const CustomHandle = ({
       <Handle
         {...rest}
         style={{
-          //   background: color,
-          backgroundImage: "url('vite.svg')",
           width: size,
           height: size,
           ...shapeStyles[shape],
-          // using square bracket notation apply the correct styles for the
-          //    chosen shape ...
         }}
       />
     </>
