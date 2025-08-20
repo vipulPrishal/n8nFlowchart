@@ -7,6 +7,7 @@ import DetailsPanel from "./components/DetailsPanel/DetailsPanel";
 const App = () => {
   const [selectedNode, setSelectedNode] = React.useState(null);
   const deleteNodeRef = React.useRef(null);
+  const clearAllRef = React.useRef(null);
 
   const handleClearSelection = () => {
     if (selectedNode && deleteNodeRef.current) {
@@ -26,12 +27,16 @@ const App = () => {
         className="bg-black app-container w-screen h-screen"
         style={{ display: "flex" }}
       >
-        <Palette />
+        {/* <Palette /> */}
+        {/* Palette with Clear Canvas button */}
+        <Palette onClearAll={() => clearAllRef.current?.()} />
+
         <div style={{ flex: 1 }}>
           <ReactFlowProvider>
             <FlowChart
               onNodeSelect={setSelectedNode}
               onNodeDelete={deleteNodeRef}
+              clearAllRef={clearAllRef}
             />
           </ReactFlowProvider>
         </div>

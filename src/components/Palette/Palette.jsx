@@ -97,7 +97,7 @@ const items = [
   },
 ];
 
-export default function Palette() {
+export default function Palette({ onClearAll }) {
   const onDragStart = (e, spec) => {
     e.dataTransfer.setData("application/reactflow", JSON.stringify(spec));
     e.dataTransfer.effectAllowed = "move";
@@ -136,6 +136,25 @@ export default function Palette() {
             {it.label}
           </div>
         ))}
+      </div>
+
+      {/* Clear button row */}
+      <div style={{ marginTop: 16 }}>
+        <button
+          onClick={() => onClearAll?.()}
+          style={{
+            width: "100%",
+            padding: "10px",
+            background: "#ff4d4d",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            color: "#fff",
+            fontWeight: "bold",
+          }}
+        >
+          Clear Canvas
+        </button>
       </div>
     </div>
   );

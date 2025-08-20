@@ -241,7 +241,13 @@ const makeContent = (spec) => {
   );
 };
 
-export default function FlowChart({ onNodeSelect, onNodeDelete }) {
+// //  Direct clearAll function
+// const clearAll = useCallback(() => {
+//   setNodes([]);
+//   setEdges([]);
+// }, [setNodes, setEdges]);
+
+export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const rf = useReactFlow();
@@ -257,12 +263,17 @@ export default function FlowChart({ onNodeSelect, onNodeDelete }) {
     [setNodes, setEdges]
   );
 
-  // Expose deleteNode function to parent component
+  // clear all nodes + edges
+  const clearAll = useCallback(() => {
+    setNodes([]);
+    setEdges([]);
+  }, [setNodes, setEdges]);
+
+  // expose both functions
   React.useEffect(() => {
-    if (onNodeDelete) {
-      onNodeDelete.current = deleteNode;
-    }
-  }, [deleteNode, onNodeDelete]);
+    if (onNodeDelete) onNodeDelete.current = deleteNode;
+    if (clearAllRef) clearAllRef.current = clearAll;
+  }, [deleteNode, clearAll, onNodeDelete, clearAllRef]);
 
   const onConnect = useCallback(
     (params) =>
