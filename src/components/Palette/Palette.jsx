@@ -20,6 +20,7 @@ const items = [
     h: 60,
     radius: "8px",
   },
+
   {
     key: "listen",
     label: "Listen (STT)",
@@ -28,6 +29,7 @@ const items = [
     h: 60,
     radius: "8px",
   },
+
   {
     key: "memory_read",
     label: "Memory: Read",

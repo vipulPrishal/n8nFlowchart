@@ -241,10 +241,28 @@ const makeContent = (spec) => {
   );
 };
 
-export default function FlowChart() {
+export default function FlowChart({ onNodeSelect, onNodeDelete }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const rf = useReactFlow();
+
+  // Function to delete a node and its connected edges
+  const deleteNode = useCallback(
+    (nodeId) => {
+      setNodes((nds) => nds.filter((node) => node.id !== nodeId));
+      setEdges((eds) =>
+        eds.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
+      );
+    },
+    [setNodes, setEdges]
+  );
+
+  // Expose deleteNode function to parent component
+  React.useEffect(() => {
+    if (onNodeDelete) {
+      onNodeDelete.current = deleteNode;
+    }
+  }, [deleteNode, onNodeDelete]);
 
   const onConnect = useCallback(
     (params) =>
@@ -285,7 +303,7 @@ export default function FlowChart() {
         id,
         type: "custom",
         position: pos,
-        data: { content: makeContent(spec), label: spec.label },
+        data: { content: makeContent(spec), label: spec.label, spec },
       };
       setNodes((nds) => nds.concat(newNode));
     },
@@ -305,6 +323,11 @@ export default function FlowChart() {
         edgeTypes={edgeTypes}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onNodeClick={(e, node) => onNodeSelect?.(node)}
+        onPaneClick={() => onNodeSelect?.(null)}
+        onSelectionChange={({ nodes: selected }) =>
+          onNodeSelect?.(selected?.[0] || null)
+        }
         fitView
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
       >
