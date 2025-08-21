@@ -1,13 +1,15 @@
 import React from "react";
 import { ReactFlowProvider } from "reactflow";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import FlowChart from "./components/FlowChart/FlowChart";
 import Palette from "./components/Palette/Palette";
 import DetailsPanel from "./components/DetailsPanel/DetailsPanel";
 
-const App = () => {
+const AppContent = () => {
   const [selectedNode, setSelectedNode] = React.useState(null);
   const deleteNodeRef = React.useRef(null);
   const clearAllRef = React.useRef(null);
+  const { isDarkMode } = useTheme();
 
   const handleClearSelection = () => {
     if (selectedNode && deleteNodeRef.current) {
@@ -24,8 +26,12 @@ const App = () => {
   return (
     <>
       <div
-        className="bg-black app-container w-screen h-screen"
-        style={{ display: "flex" }}
+        className={`app-container w-screen h-screen`}
+        style={{
+          display: "flex",
+          background: isDarkMode ? "#000000" : "#f5f5f5",
+          color: isDarkMode ? "#ffffff" : "#333333",
+        }}
       >
         {/* <Palette /> */}
         {/* Palette with Clear Canvas button */}
@@ -43,6 +49,14 @@ const App = () => {
         <DetailsPanel selected={selectedNode} onClear={handleClearSelection} />
       </div>
     </>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 };
 

@@ -9,12 +9,80 @@ import ReactFlow, {
   useReactFlow,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { useTheme } from "../../contexts/ThemeContext";
 import Node from "../Node/Node";
 import Shape from "../Shape/Shape";
 import CustomEdge from "../CustomEdge/CustomEdge";
 
 const nodeTypes = { custom: Node };
 const edgeTypes = { custom: CustomEdge };
+
+function DecisionBox({ w = 120, h = 120, label }) {
+  const { isDarkMode } = useTheme();
+  const textColor = isDarkMode ? "#fff" : "#333";
+  const borderColor = isDarkMode ? "#fff" : "#333";
+
+  return (
+    <div
+      style={{
+        width: w,
+        height: h,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: textColor,
+      }}
+    >
+      <div
+        style={{
+          width: w,
+          height: h,
+          transform: "rotate(45deg)",
+          border: `2px solid ${borderColor}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            transform: "rotate(-45deg)",
+            textAlign: "center",
+            fontSize: 22, // Increased from 18 to 22 for much better readability
+            color: textColor,
+            lineHeight: "1.2",
+            fontWeight: "600",
+          }}
+        >
+          {label}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const makeContent = (spec) => {
+  const label = spec.label;
+
+  // Scale up the dimensions for bigger nodes on canvas
+  const scaleFactor = 1.5; // Make nodes 50% bigger
+  const scaledW = spec.w * scaleFactor;
+  const scaledH = spec.h * scaleFactor;
+
+  if (spec.shape === "circle")
+    return (
+      <Shape w={scaledW} h={scaledH} radius="50%">
+        {label}
+      </Shape>
+    );
+  if (spec.shape === "diamond")
+    return <DecisionBox w={scaledW} h={scaledH} label={label} />;
+  return (
+    <Shape w={scaledW} h={scaledH} radius={spec.radius || "8px"}>
+      {label}
+    </Shape>
+  );
+};
 
 // Create nodes matching the workflow image
 const initialNodes = [
@@ -24,7 +92,13 @@ const initialNodes = [
     type: "custom",
     position: { x: -50, y: 300 },
     data: {
-      content: <Shape w={340} h={120} radius="8px" />,
+      content: (
+        <Shape w={340} h={120} radius="8px">
+          On 'Create User'
+          <br />
+          form submission
+        </Shape>
+      ),
       label: "On 'Create User'\nform submission",
     },
   },
@@ -35,7 +109,11 @@ const initialNodes = [
     type: "custom",
     position: { x: 430, y: 150 },
     data: {
-      content: <Shape w={540} h={180} radius="8px" />,
+      content: (
+        <Shape w={540} h={180} radius="8px">
+          AI Agent
+        </Shape>
+      ),
       label: "AI Agent",
     },
   },
@@ -46,7 +124,13 @@ const initialNodes = [
     type: "custom",
     position: { x: 1050, y: 200 },
     data: {
-      content: <Shape w={300} h={180} radius="100px 16px 16px 100px" />,
+      content: (
+        <Shape w={300} h={180} radius="100px 16px 16px 100px">
+          Is
+          <br />
+          manager?
+        </Shape>
+      ),
       label: "Is\nmanager?",
     },
   },
@@ -57,7 +141,11 @@ const initialNodes = [
     type: "custom",
     position: { x: 1450, y: 60 },
     data: {
-      content: <Shape w={360} h={120} radius="8px" />,
+      content: (
+        <Shape w={360} h={120} radius="8px">
+          Add to channel
+        </Shape>
+      ),
       label: "Add to channel",
     },
   },
@@ -68,7 +156,11 @@ const initialNodes = [
     type: "custom",
     position: { x: 1450, y: 340 },
     data: {
-      content: <Shape w={360} h={120} radius="8px" />,
+      content: (
+        <Shape w={360} h={120} radius="8px">
+          Update profile
+        </Shape>
+      ),
       label: "Update profile",
     },
   },
@@ -79,7 +171,15 @@ const initialNodes = [
     type: "custom",
     position: { x: 520, y: 470 },
     data: {
-      content: <Shape w={160} h={160} radius="50%" />,
+      content: (
+        <Shape w={160} h={160} radius="50%">
+          Anthropic
+          <br />
+          Chat
+          <br />
+          Model
+        </Shape>
+      ),
       label: "Anthropic\nChat\nModel",
     },
   },
@@ -88,7 +188,15 @@ const initialNodes = [
     type: "custom",
     position: { x: 740, y: 470 },
     data: {
-      content: <Shape w={160} h={160} radius="50%" />,
+      content: (
+        <Shape w={160} h={160} radius="50%">
+          Postgres
+          <br />
+          Chat
+          <br />
+          Memory
+        </Shape>
+      ),
       label: "Postgres\nChat\nMemory",
     },
   },
@@ -97,7 +205,13 @@ const initialNodes = [
     type: "custom",
     position: { x: 960, y: 470 },
     data: {
-      content: <Shape w={160} h={160} radius="50%" />,
+      content: (
+        <Shape w={160} h={160} radius="50%">
+          Microsoft
+          <br />
+          Entra ID
+        </Shape>
+      ),
       label: "Microsoft\nEntra ID",
     },
   },
@@ -106,7 +220,13 @@ const initialNodes = [
     type: "custom",
     position: { x: 1180, y: 470 },
     data: {
-      content: <Shape w={160} h={160} radius="50%" />,
+      content: (
+        <Shape w={160} h={160} radius="50%">
+          Jira
+          <br />
+          Software
+        </Shape>
+      ),
       label: "Jira\nSoftware",
     },
   },
@@ -120,7 +240,6 @@ const initialEdges = [
     source: "trigger",
     target: "ai-agent",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
   {
@@ -128,7 +247,6 @@ const initialEdges = [
     source: "ai-agent",
     target: "conditional",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
   {
@@ -136,7 +254,6 @@ const initialEdges = [
     source: "conditional",
     target: "slack-add",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
   {
@@ -144,7 +261,6 @@ const initialEdges = [
     source: "conditional",
     target: "slack-update",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
 
@@ -155,7 +271,6 @@ const initialEdges = [
     sourceHandle: "ai-b1",
     target: "anthropic",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
   {
@@ -164,7 +279,6 @@ const initialEdges = [
     sourceHandle: "ai-b2",
     target: "postgres",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
   {
@@ -173,7 +287,6 @@ const initialEdges = [
     sourceHandle: "ai-b3",
     target: "microsoft",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
   {
@@ -182,64 +295,9 @@ const initialEdges = [
     sourceHandle: "ai-b4",
     target: "jira",
     type: "custom",
-    style: { stroke: "#fff" },
     data: { arrow: true },
   },
 ];
-
-function DecisionBox({ w = 120, h = 120, label }) {
-  return (
-    <div
-      style={{
-        width: w,
-        height: h,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#fff",
-      }}
-    >
-      <div
-        style={{
-          width: w,
-          height: h,
-          transform: "rotate(45deg)",
-          border: "2px solid #fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            transform: "rotate(-45deg)",
-            textAlign: "center",
-            fontSize: 12,
-          }}
-        >
-          {label}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const makeContent = (spec) => {
-  const label = spec.label;
-  if (spec.shape === "circle")
-    return (
-      <Shape w={spec.w} h={spec.h} radius="50%">
-        {label}
-      </Shape>
-    );
-  if (spec.shape === "diamond")
-    return <DecisionBox w={spec.w} h={spec.h} label={label} />;
-  return (
-    <Shape w={spec.w} h={spec.h} radius={spec.radius || "8px"}>
-      {label}
-    </Shape>
-  );
-};
 
 // //  Direct clearAll function
 // const clearAll = useCallback(() => {
@@ -248,6 +306,7 @@ const makeContent = (spec) => {
 // }, [setNodes, setEdges]);
 
 export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
+  const { isDarkMode } = useTheme();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const rf = useReactFlow();
@@ -282,13 +341,13 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
           {
             ...params,
             type: "custom",
-            style: { stroke: "#fff" },
+            style: { stroke: isDarkMode ? "#fff" : "#333" },
             data: { arrow: true },
           },
           eds
         )
       ),
-    [setEdges]
+    [setEdges, isDarkMode]
   );
 
   const onEdgeUpdate = useCallback(
@@ -342,7 +401,7 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
         fitView
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
       >
-        <Background gap={20} color="#333" />
+        <Background gap={20} color={isDarkMode ? "#333" : "#e0e0e0"} />
         <Controls />
       </ReactFlow>
     </div>

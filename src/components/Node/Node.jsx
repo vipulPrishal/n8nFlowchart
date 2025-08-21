@@ -1,11 +1,16 @@
 /*** ⭐⭐⭐✅Version 2 :-- Adding inbuild custom handle shapes that we created ....instead of default handle  */
 import React from "react";
 import { Position } from "reactflow";
+import { useTheme } from "../../contexts/ThemeContext";
 import CustomHandle from "../CustomHandle/CustomHandle";
 
 const Node = ({ data, children, isConnectable }) => {
+  const { isDarkMode } = useTheme();
   const content = data?.content ?? children;
   const isInFlow = !!data;
+
+  const handleColor = isDarkMode ? "#fff" : "#333";
+  const labelColor = isDarkMode ? "#fff" : "#333";
 
   return (
     <div className="relative flex items-center justify-center">
@@ -17,19 +22,14 @@ const Node = ({ data, children, isConnectable }) => {
           isConnectable={isConnectable}
           shape="circle"
           size={10}
-          color="#fff"
+          color={handleColor}
         />
       )}
 
       {/* your visual (Shape or any JSX) */}
       <div className="relative">
         {content}
-        {/* Add label below the node */}
-        {data?.label && (
-          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-white text-xs font-medium text-center max-w-[150px]">
-            {data.label}
-          </div>
-        )}
+        {/* Removed the duplicate label below the node */}
       </div>
 
       {/* right / outgoing handle */}
@@ -40,7 +40,7 @@ const Node = ({ data, children, isConnectable }) => {
           isConnectable={isConnectable}
           shape="circle"
           size={10}
-          color="#fff"
+          color={handleColor}
         />
       )}
 
@@ -54,7 +54,7 @@ const Node = ({ data, children, isConnectable }) => {
             isConnectable={isConnectable}
             shape="circle"
             size={8}
-            color="#fff"
+            color={handleColor}
             style={{ left: "20%" }}
           />
           <CustomHandle
@@ -64,7 +64,7 @@ const Node = ({ data, children, isConnectable }) => {
             isConnectable={isConnectable}
             shape="circle"
             size={8}
-            color="#fff"
+            color={handleColor}
             style={{ left: "40%" }}
           />
           <CustomHandle
@@ -74,7 +74,7 @@ const Node = ({ data, children, isConnectable }) => {
             isConnectable={isConnectable}
             shape="circle"
             size={8}
-            color="#fff"
+            color={handleColor}
             style={{ left: "60%" }}
           />
           <CustomHandle
@@ -84,7 +84,7 @@ const Node = ({ data, children, isConnectable }) => {
             isConnectable={isConnectable}
             shape="circle"
             size={8}
-            color="#fff"
+            color={handleColor}
             style={{ left: "80%" }}
           />
         </>

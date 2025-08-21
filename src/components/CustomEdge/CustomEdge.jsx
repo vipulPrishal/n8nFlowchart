@@ -1,5 +1,6 @@
 import React from "react";
 import { BaseEdge, getBezierPath } from "reactflow";
+import { useTheme } from "../../contexts/ThemeContext";
 
 /**
  * data options (passed via edge.data):
@@ -17,6 +18,7 @@ export default function CustomEdge({
   style = {},
   data = {},
 }) {
+  const { isDarkMode } = useTheme();
   const { dotted = false, arrow = true } = data || {};
 
   const [edgePath] = getBezierPath({
@@ -29,7 +31,8 @@ export default function CustomEdge({
   });
 
   const strokeDasharray = dotted ? "6 6" : "0";
-  const strokeColor = style.stroke || "#fff";
+  // Use theme-aware color with fallback
+  const strokeColor = style.stroke || (isDarkMode ? "#fff" : "#333");
 
   // unique marker per edge to avoid collisions
   const markerId = `rf-arrow-${id}`;

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTheme } from "../../contexts/ThemeContext";
 
 const items = [
   {
@@ -98,39 +99,71 @@ const items = [
 ];
 
 export default function Palette({ onClearAll }) {
+  const { isDarkMode } = useTheme();
+
   const onDragStart = (e, spec) => {
     e.dataTransfer.setData("application/reactflow", JSON.stringify(spec));
     e.dataTransfer.effectAllowed = "move";
   };
 
+  const containerStyles = {
+    width: "20%",
+    minWidth: 240,
+    padding: 12,
+    background: isDarkMode ? "#0f0f0f" : "#ffffff",
+    color: isDarkMode ? "#fff" : "#333",
+    overflowY: "auto",
+    borderRight: `1px solid ${isDarkMode ? "#222" : "#e0e0e0"}`,
+  };
+
+  const titleStyles = {
+    fontWeight: 700,
+    marginBottom: 12,
+    color: isDarkMode ? "#fff" : "#333",
+    fontSize: "20px", // Increased from 16px to 20px for much better readability
+  };
+
+  const itemStyles = {
+    padding: "10px 12px",
+    border: `1px solid ${isDarkMode ? "#444" : "#ccc"}`,
+    borderRadius: 8,
+    textAlign: "center",
+    cursor: "grab",
+    background: isDarkMode ? "#151515" : "#f8f9fa",
+    color: isDarkMode ? "#fff" : "#333",
+    transition: "all 0.2s ease",
+    fontSize: "13px", // Reverted to original size
+    fontWeight: "500",
+  };
+
+  const clearButtonStyles = {
+    width: "100%",
+    padding: "10px",
+    background: "#ff4d4d",
+    border: "none",
+    borderRadius: 6,
+    cursor: "pointer",
+    color: "#fff",
+    fontWeight: "bold",
+    transition: "all 0.2s ease",
+    fontSize: "16px", // Increased from 14px to 16px for much better readability
+  };
+
   return (
-    <div
-      style={{
-        width: "20%",
-        minWidth: 240,
-        padding: 12,
-        background: "#0f0f0f",
-        color: "#fff",
-        overflowY: "auto",
-        borderRight: "1px solid #222",
-      }}
-    >
-      <div style={{ fontWeight: 700, marginBottom: 12 }}>
-        Blocks (drag onto canvas)
-      </div>
+    <div style={containerStyles}>
+      <div style={titleStyles}>Blocks (drag onto canvas)</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {items.map((it) => (
           <div
             key={it.key}
             draggable
             onDragStart={(e) => onDragStart(e, it)}
-            style={{
-              padding: "10px 12px",
-              border: "1px solid #444",
-              borderRadius: 8,
-              textAlign: "center",
-              cursor: "grab",
-              background: "#151515",
+            style={itemStyles}
+            onMouseEnter={(e) => {
+              e.target.style.background = isDarkMode ? "#2a2a2a" : "#e9ecef";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = isDarkMode ? "#151515" : "#f8f9fa";
             }}
           >
             {it.label}
@@ -142,15 +175,12 @@ export default function Palette({ onClearAll }) {
       <div style={{ marginTop: 16 }}>
         <button
           onClick={() => onClearAll?.()}
-          style={{
-            width: "100%",
-            padding: "10px",
-            background: "#ff4d4d",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            color: "#fff",
-            fontWeight: "bold",
+          style={clearButtonStyles}
+          onMouseEnter={(e) => {
+            e.target.style.background = "#ff3333";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "#ff4d4d";
           }}
         >
           Clear Canvas
