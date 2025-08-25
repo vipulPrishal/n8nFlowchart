@@ -17,7 +17,7 @@ import CustomEdge from "../CustomEdge/CustomEdge";
 const nodeTypes = { custom: Node };
 const edgeTypes = { custom: CustomEdge };
 
-function DecisionBox({ w = 120, h = 120, label }) {
+function DecisionBox({ w = 120, h = 120, label, hideText = false }) {
   const { isDarkMode } = useTheme();
   const textColor = isDarkMode ? "#fff" : "#333";
   const borderColor = isDarkMode ? "#fff" : "#333";
@@ -54,14 +54,14 @@ function DecisionBox({ w = 120, h = 120, label }) {
             fontWeight: "600",
           }}
         >
-          {label}
+          {!hideText && label}
         </div>
       </div>
     </div>
   );
 }
 
-const makeContent = (spec) => {
+const makeContent = (spec, hideText = false) => {
   const label = spec.label;
 
   // Scale up the dimensions for bigger nodes on canvas
@@ -71,14 +71,21 @@ const makeContent = (spec) => {
 
   if (spec.shape === "circle")
     return (
-      <Shape w={scaledW} h={scaledH} radius="50%">
+      <Shape w={scaledW} h={scaledH} radius="50%" hideText={hideText}>
         {label}
       </Shape>
     );
   if (spec.shape === "diamond")
-    return <DecisionBox w={scaledW} h={scaledH} label={label} />;
+    return (
+      <DecisionBox w={scaledW} h={scaledH} label={label} hideText={hideText} />
+    );
   return (
-    <Shape w={scaledW} h={scaledH} radius={spec.radius || "8px"}>
+    <Shape
+      w={scaledW}
+      h={scaledH}
+      radius={spec.radius || "8px"}
+      hideText={hideText}
+    >
       {label}
     </Shape>
   );
@@ -328,6 +335,60 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
     setEdges([]);
   }, [setNodes, setEdges]);
 
+  // Function to handle text changes in nodes
+  const handleNodeTextChange = useCallback(
+    (nodeId, newText) => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === nodeId) {
+            let updatedContent = node.data.content;
+
+            // For nodes created from palette (have spec)
+            if (node.data.spec) {
+              updatedContent = makeContent(node.data.spec, newText);
+            }
+            // For nodes with Shape content (initial nodes), update the children
+            else if (
+              node.data.content &&
+              node.data.content.type &&
+              node.data.content.type.name === "Shape"
+            ) {
+              updatedContent = React.cloneElement(
+                node.data.content,
+                {},
+                newText
+              );
+            }
+
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                label: newText,
+                content: updatedContent,
+              },
+            };
+          }
+          return node;
+        })
+      );
+    },
+    [setNodes]
+  );
+
+  // Add text change handler to existing nodes
+  React.useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          onTextChange: handleNodeTextChange,
+        },
+      }))
+    );
+  }, [handleNodeTextChange, setNodes]);
+
   // expose both functions
   React.useEffect(() => {
     if (onNodeDelete) onNodeDelete.current = deleteNode;
@@ -373,11 +434,16 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
         id,
         type: "custom",
         position: pos,
-        data: { content: makeContent(spec), label: spec.label, spec },
+        data: {
+          content: makeContent(spec),
+          label: spec.label,
+          spec,
+          onTextChange: handleNodeTextChange,
+        },
       };
       setNodes((nds) => nds.concat(newNode));
     },
-    [rf, setNodes]
+    [rf, setNodes, handleNodeTextChange]
   );
 
   return (

@@ -1,7 +1,14 @@
 import React from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 
-const Shape = ({ w = 100, h = 100, radius = "5px", padding, children }) => {
+const Shape = ({
+  w = 100,
+  h = 100,
+  radius = "5px",
+  padding,
+  children,
+  hideText = false,
+}) => {
   const { isDarkMode } = useTheme();
 
   const borderColor = isDarkMode ? "#fff" : "#333";
@@ -22,7 +29,7 @@ const Shape = ({ w = 100, h = 100, radius = "5px", padding, children }) => {
         fontWeight: "600",
       }}
     >
-      {children}
+      {!hideText && children}
     </div>
   );
 };
