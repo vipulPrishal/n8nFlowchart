@@ -57,6 +57,7 @@ const Node = ({ data, children, isConnectable, id }) => {
           shape="circle"
           size={10}
           color={handleColor}
+          style={{ left: "8px" }}
         />
       )}
 
@@ -115,6 +116,21 @@ const Node = ({ data, children, isConnectable, id }) => {
           shape="circle"
           size={10}
           color={handleColor}
+          style={{ right: "8px" }}
+        />
+      )}
+
+      {/* top handle for all nodes */}
+      {isInFlow && (
+        <CustomHandle
+          id="top"
+          type="target"
+          position={Position.Top}
+          isConnectable={isConnectable}
+          shape="circle"
+          size={8}
+          color={handleColor}
+          style={{ top: "8px" }}
         />
       )}
 
@@ -129,7 +145,7 @@ const Node = ({ data, children, isConnectable, id }) => {
             shape="circle"
             size={8}
             color={handleColor}
-            style={{ left: "20%" }}
+            style={{ left: "20%", bottom: "8px" }}
           />
           <CustomHandle
             id="ai-b2"
@@ -139,7 +155,7 @@ const Node = ({ data, children, isConnectable, id }) => {
             shape="circle"
             size={8}
             color={handleColor}
-            style={{ left: "40%" }}
+            style={{ left: "40%", bottom: "8px" }}
           />
           <CustomHandle
             id="ai-b3"
@@ -149,7 +165,7 @@ const Node = ({ data, children, isConnectable, id }) => {
             shape="circle"
             size={8}
             color={handleColor}
-            style={{ left: "60%" }}
+            style={{ left: "60%", bottom: "8px" }}
           />
           <CustomHandle
             id="ai-b4"
@@ -159,9 +175,23 @@ const Node = ({ data, children, isConnectable, id }) => {
             shape="circle"
             size={8}
             color={handleColor}
-            style={{ left: "80%" }}
+            style={{ left: "80%", bottom: "8px" }}
           />
         </>
+      )}
+
+      {/* bottom handle for all other nodes */}
+      {isInFlow && data?.label !== "AI Agent" && (
+        <CustomHandle
+          id="bottom"
+          type="source"
+          position={Position.Bottom}
+          isConnectable={isConnectable}
+          shape="circle"
+          size={8}
+          color={handleColor}
+          style={{ bottom: "8px" }}
+        />
       )}
     </div>
   );
