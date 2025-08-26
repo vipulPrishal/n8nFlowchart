@@ -12,10 +12,8 @@ import "reactflow/dist/style.css";
 import { useTheme } from "../../contexts/ThemeContext";
 import Node from "../Node/Node";
 import Shape from "../Shape/Shape";
-import CustomEdge from "../CustomEdge/CustomEdge";
 
 const nodeTypes = { custom: Node };
-const edgeTypes = { custom: CustomEdge };
 
 function DecisionBox({ w = 120, h = 120, label, hideText = false }) {
   const { isDarkMode } = useTheme();
@@ -246,29 +244,53 @@ const initialEdges = [
     id: "e-trigger-ai",
     source: "trigger",
     target: "ai-agent",
-    type: "custom",
-    data: { arrow: true },
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
   {
     id: "e-ai-conditional",
     source: "ai-agent",
     target: "conditional",
-    type: "custom",
-    data: { arrow: true },
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
   {
     id: "e-conditional-slack-add",
     source: "conditional",
     target: "slack-add",
-    type: "custom",
-    data: { arrow: true },
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
   {
     id: "e-conditional-slack-update",
     source: "conditional",
     target: "slack-update",
-    type: "custom",
-    data: { arrow: true },
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
 
   // AI Agent dependencies from bottom handles
@@ -277,32 +299,60 @@ const initialEdges = [
     source: "ai-agent",
     sourceHandle: "ai-b1",
     target: "anthropic",
-    type: "custom",
-    data: { arrow: true },
+    targetHandle: "top",
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
   {
     id: "e-ai-postgres",
     source: "ai-agent",
     sourceHandle: "ai-b2",
     target: "postgres",
-    type: "custom",
-    data: { arrow: true },
+    targetHandle: "top",
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
   {
     id: "e-ai-microsoft",
     source: "ai-agent",
     sourceHandle: "ai-b3",
     target: "microsoft",
-    type: "custom",
-    data: { arrow: true },
+    targetHandle: "top",
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
   {
     id: "e-ai-jira",
     source: "ai-agent",
     sourceHandle: "ai-b4",
     target: "jira",
-    type: "custom",
-    data: { arrow: true },
+    targetHandle: "top",
+    type: "default",
+    style: { stroke: "#fff", strokeWidth: 2 },
+    markerEnd: {
+      type: "arrowclosed",
+      width: 16,
+      height: 16,
+      color: "#fff",
+    },
   },
 ];
 
@@ -401,9 +451,14 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
         addEdge(
           {
             ...params,
-            type: "custom",
-            style: { stroke: isDarkMode ? "#fff" : "#333" },
-            data: { arrow: true },
+            type: "default",
+            style: { stroke: isDarkMode ? "#fff" : "#333", strokeWidth: 2 },
+            markerEnd: {
+              type: "arrowclosed",
+              width: 16,
+              height: 16,
+              color: isDarkMode ? "#fff" : "#333",
+            },
           },
           eds
         )
@@ -456,7 +511,6 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
         onConnect={onConnect}
         onEdgeUpdate={onEdgeUpdate}
         nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
         onDragOver={onDragOver}
         onDrop={onDrop}
         onNodeClick={(e, node) => onNodeSelect?.(node)}
