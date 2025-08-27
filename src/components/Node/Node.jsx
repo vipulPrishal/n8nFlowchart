@@ -9,6 +9,13 @@ const Node = ({ data, children, isConnectable, id }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(data?.label || "");
 
+  // Keep editText in sync with data.label when it changes
+  React.useEffect(() => {
+    if (!isEditing) {
+      setEditText(data?.label || "");
+    }
+  }, [data?.label, isEditing]);
+
   const content = data?.content ?? children;
   const isInFlow = !!data;
 
@@ -31,6 +38,8 @@ const Node = ({ data, children, isConnectable, id }) => {
     if (data && data.onTextChange) {
       data.onTextChange(id, editText);
     }
+    // Reset editText to current label to ensure consistency
+    setEditText(data?.label || "");
   };
 
   const handleKeyPress = (e) => {

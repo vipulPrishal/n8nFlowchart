@@ -395,7 +395,12 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
 
             // For nodes created from palette (have spec)
             if (node.data.spec) {
-              updatedContent = makeContent(node.data.spec, newText);
+              // Create a new spec with updated label
+              const updatedSpec = {
+                ...node.data.spec,
+                label: newText,
+              };
+              updatedContent = makeContent(updatedSpec);
             }
             // For nodes with Shape content (initial nodes), update the children
             else if (
@@ -416,6 +421,10 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
                 ...node.data,
                 label: newText,
                 content: updatedContent,
+                // Update the spec as well for palette nodes
+                ...(node.data.spec && {
+                  spec: { ...node.data.spec, label: newText },
+                }),
               },
             };
           }
