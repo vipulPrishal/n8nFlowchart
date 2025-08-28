@@ -29,31 +29,41 @@ function DecisionBox({ w = 120, h = 120, label, hideText = false }) {
         alignItems: "center",
         justifyContent: "center",
         color: textColor,
+        position: "relative",
       }}
     >
-      <div
+      {/* Diamond shape using SVG for proper border */}
+      <svg
+        width={w}
+        height={h}
         style={{
-          width: w,
-          height: h,
-          transform: "rotate(45deg)",
-          border: `2px solid ${borderColor}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          position: "absolute",
+          top: 0,
+          left: 0,
         }}
       >
-        <div
-          style={{
-            transform: "rotate(-45deg)",
-            textAlign: "center",
-            fontSize: 22, // Increased from 18 to 22 for much better readability
-            color: textColor,
-            lineHeight: "1.2",
-            fontWeight: "600",
-          }}
-        >
-          {!hideText && label}
-        </div>
+        <polygon
+          points={`${w / 2},0 ${w},${h / 2} ${w / 2},${h} 0,${h / 2}`}
+          fill="transparent"
+          stroke={borderColor}
+          strokeWidth="2"
+        />
+      </svg>
+
+      {/* Text content */}
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: 22,
+          color: textColor,
+          lineHeight: "1.2",
+          fontWeight: "600",
+          padding: "10px",
+          zIndex: 1,
+          position: "relative",
+        }}
+      >
+        {!hideText && label}
       </div>
     </div>
   );

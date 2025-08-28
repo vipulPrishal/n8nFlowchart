@@ -22,6 +22,64 @@ const Node = ({ data, children, isConnectable, id }) => {
   const handleColor = isDarkMode ? "#fff" : "#333";
   const labelColor = isDarkMode ? "#fff" : "#333";
 
+  // Check if this is a diamond shape (decision node)
+  const isDiamondShape = data?.spec?.shape === "diamond";
+
+  // Calculate handler positions for diamond shape
+  const getDiamondHandlerPosition = (position) => {
+    // For diamond shape created with SVG polygon, handlers should be at the vertices
+    // The diamond vertices are at the center of each side of the container
+    switch (position) {
+      case Position.Left:
+        return {
+          left: "0px",
+          top: "50%",
+          transform: "translateY(-50%)",
+        };
+      case Position.Right:
+        return {
+          right: "0px",
+          top: "50%",
+          transform: "translateY(-50%)",
+        };
+      case Position.Top:
+        return {
+          top: "0px",
+          left: "50%",
+          transform: "translateX(-50%)",
+        };
+      case Position.Bottom:
+        return {
+          bottom: "0px",
+          left: "50%",
+          transform: "translateX(-50%)",
+        };
+      default:
+        return {};
+    }
+  };
+
+  // Get handler position based on shape type
+  const getHandlerPosition = (position) => {
+    if (isDiamondShape) {
+      return getDiamondHandlerPosition(position);
+    }
+
+    // Default positions for other shapes
+    switch (position) {
+      case Position.Left:
+        return { left: "8px" };
+      case Position.Right:
+        return { right: "8px" };
+      case Position.Top:
+        return { top: "8px" };
+      case Position.Bottom:
+        return { bottom: "8px" };
+      default:
+        return {};
+    }
+  };
+
   const handleSingleClick = () => {
     // Enable text editing on single click
     setIsEditing(true);
@@ -64,9 +122,9 @@ const Node = ({ data, children, isConnectable, id }) => {
           position={Position.Left}
           isConnectable={isConnectable}
           shape="circle"
-          size={10}
+          size={isDiamondShape ? 6 : 10}
           color={handleColor}
-          style={{ left: "8px" }}
+          style={getHandlerPosition(Position.Left)}
         />
       )}
 
@@ -123,9 +181,9 @@ const Node = ({ data, children, isConnectable, id }) => {
           position={Position.Right}
           isConnectable={isConnectable}
           shape="circle"
-          size={10}
+          size={isDiamondShape ? 6 : 10}
           color={handleColor}
-          style={{ right: "8px" }}
+          style={getHandlerPosition(Position.Right)}
         />
       )}
 
@@ -137,9 +195,9 @@ const Node = ({ data, children, isConnectable, id }) => {
           position={Position.Top}
           isConnectable={isConnectable}
           shape="circle"
-          size={8}
+          size={isDiamondShape ? 6 : 8}
           color={handleColor}
-          style={{ top: "8px" }}
+          style={getHandlerPosition(Position.Top)}
         />
       )}
 
@@ -197,9 +255,9 @@ const Node = ({ data, children, isConnectable, id }) => {
           position={Position.Bottom}
           isConnectable={isConnectable}
           shape="circle"
-          size={8}
+          size={isDiamondShape ? 6 : 8}
           color={handleColor}
-          style={{ bottom: "8px" }}
+          style={getHandlerPosition(Position.Bottom)}
         />
       )}
     </div>
