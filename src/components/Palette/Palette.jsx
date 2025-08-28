@@ -11,7 +11,7 @@ const items = [
     radius: "50%",
   },
   { key: "end", label: "End", shape: "circle", w: 100, h: 100, radius: "50%" },
-  { key: "decision", label: "Decision", shape: "diamond", w: 120, h: 120 },
+  { key: "decision", label: "Decision", shape: "diamond", w: 150, h: 150 },
   { key: "llm", label: "LLM", shape: "rect", w: 180, h: 60, radius: "8px" },
   {
     key: "speak",
