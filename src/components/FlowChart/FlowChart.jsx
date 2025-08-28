@@ -237,7 +237,7 @@ const initialNodes = [
   },
 ];
 
-// Create edges matching the workflow connections
+// Create edges matching the workflow connections - will be updated with theme colors
 const initialEdges = [
   // Main workflow connections (solid with arrows)
   {
@@ -245,12 +245,11 @@ const initialEdges = [
     source: "trigger",
     target: "ai-agent",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
   {
@@ -258,12 +257,11 @@ const initialEdges = [
     source: "ai-agent",
     target: "conditional",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
   {
@@ -271,12 +269,11 @@ const initialEdges = [
     source: "conditional",
     target: "slack-add",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
   {
@@ -284,12 +281,11 @@ const initialEdges = [
     source: "conditional",
     target: "slack-update",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
 
@@ -301,12 +297,11 @@ const initialEdges = [
     target: "anthropic",
     targetHandle: "top",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
   {
@@ -316,12 +311,11 @@ const initialEdges = [
     target: "postgres",
     targetHandle: "top",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
   {
@@ -331,12 +325,11 @@ const initialEdges = [
     target: "microsoft",
     targetHandle: "top",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
   {
@@ -346,12 +339,11 @@ const initialEdges = [
     target: "jira",
     targetHandle: "top",
     type: "default",
-    style: { stroke: "#fff", strokeWidth: 2 },
+    style: { strokeWidth: 2 },
     markerEnd: {
       type: "arrowclosed",
       width: 16,
       height: 16,
-      color: "#fff",
     },
   },
 ];
@@ -448,6 +440,23 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
     );
   }, [handleNodeTextChange, setNodes]);
 
+  // Update edge colors when theme changes
+  React.useEffect(() => {
+    setEdges((eds) =>
+      eds.map((edge) => ({
+        ...edge,
+        style: {
+          ...edge.style,
+          stroke: isDarkMode ? "#fff" : "#333",
+        },
+        markerEnd: {
+          ...edge.markerEnd,
+          color: isDarkMode ? "#fff" : "#333",
+        },
+      }))
+    );
+  }, [isDarkMode, setEdges]);
+
   // expose both functions
   React.useEffect(() => {
     if (onNodeDelete) onNodeDelete.current = deleteNode;
@@ -455,7 +464,21 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
   }, [deleteNode, clearAll, onNodeDelete, clearAllRef]);
 
   const onConnect = useCallback(
-    (params) =>
+    (params) => {
+      // Get the source and target nodes
+      const sourceNode = nodes.find((node) => node.id === params.source);
+      const targetNode = nodes.find((node) => node.id === params.target);
+
+      // Prevent connections TO Start node (no incoming connections)
+      if (targetNode && targetNode.data.label === "Start") {
+        return;
+      }
+
+      // Prevent connections FROM End node (no outgoing connections)
+      if (sourceNode && sourceNode.data.label === "End") {
+        return;
+      }
+
       setEdges((eds) =>
         addEdge(
           {
@@ -471,8 +494,9 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
           },
           eds
         )
-      ),
-    [setEdges, isDarkMode]
+      );
+    },
+    [setEdges, isDarkMode, nodes]
   );
 
   const onEdgeUpdate = useCallback(
@@ -492,6 +516,22 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
       const raw = e.dataTransfer.getData("application/reactflow");
       if (!raw) return;
       const spec = JSON.parse(raw);
+
+      // Check if trying to add Start or End node when one already exists
+      if (spec.key === "start" || spec.key === "end") {
+        const existingNodes = nodes;
+        const existingStartOrEnd = existingNodes.find(
+          (node) =>
+            (spec.key === "start" && node.data.label === "Start") ||
+            (spec.key === "end" && node.data.label === "End")
+        );
+
+        if (existingStartOrEnd) {
+          // Don't add the node if one already exists
+          return;
+        }
+      }
+
       const pos = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
       const id = `n-${Date.now()}`;
       const newNode = {
@@ -507,7 +547,7 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
       };
       setNodes((nds) => nds.concat(newNode));
     },
-    [rf, setNodes, handleNodeTextChange]
+    [rf, setNodes, handleNodeTextChange, nodes]
   );
 
   return (
