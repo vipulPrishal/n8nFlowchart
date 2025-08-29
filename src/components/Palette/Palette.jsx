@@ -96,6 +96,14 @@ const items = [
     h: 60,
     radius: "8px",
   },
+  {
+    key: "ai_agent",
+    label: "AI Agent",
+    shape: "rect",
+    w: 180,
+    h: 60,
+    radius: "8px",
+  },
 ];
 
 export default function Palette({ onClearAll }) {
