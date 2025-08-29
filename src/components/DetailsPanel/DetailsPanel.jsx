@@ -14,6 +14,30 @@ export default function DetailsPanel({ selected, onClear }) {
     retryAttempts: "3",
     timeout: "30",
     description: "",
+    // AI Agent specific fields
+    agentType: "",
+    modelName: "",
+    temperature: "0.7",
+    maxTokens: "1000",
+    voiceProvider: "",
+    voiceId: "",
+    language: "en-US",
+    // LLM specific fields
+    promptTemplate: "",
+    systemPrompt: "",
+    // TTS/STT specific fields
+    audioFormat: "mp3",
+    sampleRate: "22050",
+    // Memory specific fields
+    memoryType: "",
+    memoryKey: "",
+    // Webhook specific fields
+    httpMethod: "POST",
+    headers: "",
+    // RAG specific fields
+    vectorStore: "",
+    similarityThreshold: "0.8",
+    topK: "5",
   });
 
   // Load existing data when node is selected
@@ -31,6 +55,24 @@ export default function DetailsPanel({ selected, onClear }) {
         retryAttempts: "3",
         timeout: "30",
         description: "",
+        agentType: "",
+        modelName: "",
+        temperature: "0.7",
+        maxTokens: "1000",
+        voiceProvider: "",
+        voiceId: "",
+        language: "en-US",
+        promptTemplate: "",
+        systemPrompt: "",
+        audioFormat: "mp3",
+        sampleRate: "22050",
+        memoryType: "",
+        memoryKey: "",
+        httpMethod: "POST",
+        headers: "",
+        vectorStore: "",
+        similarityThreshold: "0.8",
+        topK: "5",
       });
     }
   }, [selected]);
@@ -49,6 +91,11 @@ export default function DetailsPanel({ selected, onClear }) {
       console.log("Workflow configuration saved:", formData);
       // Here you would typically call a function to update the node in the flowchart
     }
+  };
+
+  // Get node type for conditional rendering
+  const getNodeType = () => {
+    return selected?.data?.label || "";
   };
 
   const panelStyles = {
@@ -133,35 +180,610 @@ export default function DetailsPanel({ selected, onClear }) {
     color: "#fff",
   };
 
-  const actionTypeOptions = [
-    { value: "", label: "Select Action Type" },
-    { value: "schedule_appointment", label: "Schedule Appointment" },
-    { value: "make_outbound_call", label: "Make Outbound Call" },
-    { value: "receive_inbound_call", label: "Receive Inbound Call" },
-    { value: "send_sms", label: "Send SMS" },
-    { value: "update_contact", label: "Update Contact" },
-    { value: "log_call_activity", label: "Log Call Activity" },
-    { value: "send_email", label: "Send Email" },
-    { value: "create_task", label: "Create Task" },
+  // AI Agent specific options
+  const agentTypeOptions = [
+    { value: "", label: "Select Agent Type" },
+    { value: "elevenlabs", label: "ElevenLabs" },
+    { value: "assemblyai", label: "AssemblyAI" },
+    { value: "openai", label: "OpenAI" },
+    { value: "anthropic", label: "Anthropic Claude" },
+    { value: "google", label: "Google Gemini" },
+    { value: "custom", label: "Custom AI Provider" },
   ];
 
-  const triggerOptions = [
-    { value: "", label: "Select Trigger" },
-    { value: "new_lead", label: "On New Lead" },
-    { value: "appointment_confirmed", label: "On Appointment Confirmed" },
-    { value: "call_completed", label: "On Call Completed" },
-    { value: "follow_up_due", label: "On Follow-up Due" },
-    { value: "payment_received", label: "On Payment Received" },
-    { value: "customer_inquiry", label: "On Customer Inquiry" },
-    { value: "lead_converted", label: "On Lead Converted" },
+  const voiceProviderOptions = [
+    { value: "", label: "Select Voice Provider" },
+    { value: "elevenlabs", label: "ElevenLabs" },
+    { value: "assemblyai", label: "AssemblyAI" },
+    { value: "azure", label: "Azure Speech" },
+    { value: "aws", label: "AWS Polly" },
+    { value: "google", label: "Google TTS" },
   ];
 
-  const priorityOptions = [
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-    { value: "urgent", label: "Urgent" },
+  const modelOptions = [
+    { value: "", label: "Select Model" },
+    { value: "gpt-4", label: "GPT-4" },
+    { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
+    { value: "claude-3", label: "Claude-3" },
+    { value: "claude-2", label: "Claude-2" },
+    { value: "gemini-pro", label: "Gemini Pro" },
+    { value: "custom", label: "Custom Model" },
   ];
+
+  const languageOptions = [
+    { value: "en-US", label: "English (US)" },
+    { value: "en-GB", label: "English (UK)" },
+    { value: "es-ES", label: "Spanish" },
+    { value: "fr-FR", label: "French" },
+    { value: "de-DE", label: "German" },
+    { value: "hi-IN", label: "Hindi" },
+    { value: "ja-JP", label: "Japanese" },
+    { value: "ko-KR", label: "Korean" },
+    { value: "zh-CN", label: "Chinese (Simplified)" },
+  ];
+
+  const audioFormatOptions = [
+    { value: "mp3", label: "MP3" },
+    { value: "wav", label: "WAV" },
+    { value: "ogg", label: "OGG" },
+    { value: "flac", label: "FLAC" },
+    { value: "aac", label: "AAC" },
+  ];
+
+  const memoryTypeOptions = [
+    { value: "", label: "Select Memory Type" },
+    { value: "conversation", label: "Conversation History" },
+    { value: "user_preferences", label: "User Preferences" },
+    { value: "session_data", label: "Session Data" },
+    { value: "long_term", label: "Long-term Memory" },
+    { value: "vector", label: "Vector Database" },
+  ];
+
+  const httpMethodOptions = [
+    { value: "GET", label: "GET" },
+    { value: "POST", label: "POST" },
+    { value: "PUT", label: "PUT" },
+    { value: "PATCH", label: "PATCH" },
+    { value: "DELETE", label: "DELETE" },
+  ];
+
+  const vectorStoreOptions = [
+    { value: "", label: "Select Vector Store" },
+    { value: "pinecone", label: "Pinecone" },
+    { value: "weaviate", label: "Weaviate" },
+    { value: "qdrant", label: "Qdrant" },
+    { value: "chroma", label: "Chroma" },
+    { value: "milvus", label: "Milvus" },
+    { value: "elasticsearch", label: "Elasticsearch" },
+  ];
+
+  // Render AI Agent specific configuration
+  const renderAIAgentConfig = () => (
+    <>
+      {/* Agent Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>AI Agent Configuration</div>
+
+        <div>
+          <div style={labelStyles}>Agent Type *</div>
+          <select
+            style={selectStyles}
+            value={formData.agentType}
+            onChange={(e) => handleInputChange("agentType", e.target.value)}
+          >
+            {agentTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Model Name</div>
+          <select
+            style={selectStyles}
+            value={formData.modelName}
+            onChange={(e) => handleInputChange("modelName", e.target.value)}
+          >
+            {modelOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+        >
+          <div>
+            <div style={labelStyles}>Temperature</div>
+            <input
+              type="number"
+              style={inputStyles}
+              min="0"
+              max="2"
+              step="0.1"
+              value={formData.temperature}
+              onChange={(e) => handleInputChange("temperature", e.target.value)}
+            />
+          </div>
+          <div>
+            <div style={labelStyles}>Max Tokens</div>
+            <input
+              type="number"
+              style={inputStyles}
+              min="1"
+              max="4000"
+              value={formData.maxTokens}
+              onChange={(e) => handleInputChange("maxTokens", e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Voice Provider</div>
+          <select
+            style={selectStyles}
+            value={formData.voiceProvider}
+            onChange={(e) => handleInputChange("voiceProvider", e.target.value)}
+          >
+            {voiceProviderOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Voice ID</div>
+          <input
+            type="text"
+            style={inputStyles}
+            placeholder="Enter voice ID (e.g., 21m00Tcm4TlvDq8ikWAM)"
+            value={formData.voiceId}
+            onChange={(e) => handleInputChange("voiceId", e.target.value)}
+          />
+        </div>
+
+        <div>
+          <div style={labelStyles}>Language</div>
+          <select
+            style={selectStyles}
+            value={formData.language}
+            onChange={(e) => handleInputChange("language", e.target.value)}
+          >
+            {languageOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Prompt Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>Prompt Configuration</div>
+
+        <div>
+          <div style={labelStyles}>System Prompt</div>
+          <textarea
+            style={{
+              ...inputStyles,
+              minHeight: "80px",
+              resize: "vertical",
+            }}
+            placeholder="Enter the system prompt for the AI agent..."
+            value={formData.systemPrompt}
+            onChange={(e) => handleInputChange("systemPrompt", e.target.value)}
+          />
+        </div>
+
+        <div>
+          <div style={labelStyles}>Prompt Template</div>
+          <textarea
+            style={{
+              ...inputStyles,
+              minHeight: "80px",
+              resize: "vertical",
+            }}
+            placeholder="Enter the prompt template with variables like {{user_input}}..."
+            value={formData.promptTemplate}
+            onChange={(e) =>
+              handleInputChange("promptTemplate", e.target.value)
+            }
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  // Render LLM specific configuration
+  const renderLLMConfig = () => (
+    <>
+      {/* LLM Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>LLM Configuration</div>
+
+        <div>
+          <div style={labelStyles}>Model Name *</div>
+          <select
+            style={selectStyles}
+            value={formData.modelName}
+            onChange={(e) => handleInputChange("modelName", e.target.value)}
+          >
+            {modelOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+        >
+          <div>
+            <div style={labelStyles}>Temperature</div>
+            <input
+              type="number"
+              style={inputStyles}
+              min="0"
+              max="2"
+              step="0.1"
+              value={formData.temperature}
+              onChange={(e) => handleInputChange("temperature", e.target.value)}
+            />
+          </div>
+          <div>
+            <div style={labelStyles}>Max Tokens</div>
+            <input
+              type="number"
+              style={inputStyles}
+              min="1"
+              max="4000"
+              value={formData.maxTokens}
+              onChange={(e) => handleInputChange("maxTokens", e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div style={labelStyles}>System Prompt</div>
+          <textarea
+            style={{
+              ...inputStyles,
+              minHeight: "80px",
+              resize: "vertical",
+            }}
+            placeholder="Enter the system prompt..."
+            value={formData.systemPrompt}
+            onChange={(e) => handleInputChange("systemPrompt", e.target.value)}
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  // Render TTS/STT specific configuration
+  const renderTTSSTTConfig = () => (
+    <>
+      {/* TTS/STT Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>
+          {getNodeType().includes("Speak")
+            ? "TTS Configuration"
+            : "STT Configuration"}
+        </div>
+
+        <div>
+          <div style={labelStyles}>Voice Provider</div>
+          <select
+            style={selectStyles}
+            value={formData.voiceProvider}
+            onChange={(e) => handleInputChange("voiceProvider", e.target.value)}
+          >
+            {voiceProviderOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Voice ID</div>
+          <input
+            type="text"
+            style={inputStyles}
+            placeholder="Enter voice ID"
+            value={formData.voiceId}
+            onChange={(e) => handleInputChange("voiceId", e.target.value)}
+          />
+        </div>
+
+        <div>
+          <div style={labelStyles}>Language</div>
+          <select
+            style={selectStyles}
+            value={formData.language}
+            onChange={(e) => handleInputChange("language", e.target.value)}
+          >
+            {languageOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+        >
+          <div>
+            <div style={labelStyles}>Audio Format</div>
+            <select
+              style={selectStyles}
+              value={formData.audioFormat}
+              onChange={(e) => handleInputChange("audioFormat", e.target.value)}
+            >
+              {audioFormatOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <div style={labelStyles}>Sample Rate (Hz)</div>
+            <input
+              type="number"
+              style={inputStyles}
+              min="8000"
+              max="48000"
+              step="1000"
+              value={formData.sampleRate}
+              onChange={(e) => handleInputChange("sampleRate", e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  // Render Memory specific configuration
+  const renderMemoryConfig = () => (
+    <>
+      {/* Memory Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>Memory Configuration</div>
+
+        <div>
+          <div style={labelStyles}>Memory Type *</div>
+          <select
+            style={selectStyles}
+            value={formData.memoryType}
+            onChange={(e) => handleInputChange("memoryType", e.target.value)}
+          >
+            {memoryTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Memory Key</div>
+          <input
+            type="text"
+            style={inputStyles}
+            placeholder="Enter memory key for data storage"
+            value={formData.memoryKey}
+            onChange={(e) => handleInputChange("memoryKey", e.target.value)}
+          />
+        </div>
+
+        <div>
+          <div style={labelStyles}>Description</div>
+          <textarea
+            style={{
+              ...inputStyles,
+              minHeight: "60px",
+              resize: "vertical",
+            }}
+            placeholder="Describe what data this memory stores..."
+            value={formData.description}
+            onChange={(e) => handleInputChange("description", e.target.value)}
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  // Render Webhook specific configuration
+  const renderWebhookConfig = () => (
+    <>
+      {/* Webhook Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>Webhook Configuration</div>
+
+        <div>
+          <div style={labelStyles}>HTTP Method</div>
+          <select
+            style={selectStyles}
+            value={formData.httpMethod}
+            onChange={(e) => handleInputChange("httpMethod", e.target.value)}
+          >
+            {httpMethodOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Webhook URL *</div>
+          <input
+            type="text"
+            style={inputStyles}
+            placeholder="https://your-domain.com/webhook"
+            value={formData.webhookUrl}
+            onChange={(e) => handleInputChange("webhookUrl", e.target.value)}
+          />
+        </div>
+
+        <div>
+          <div style={labelStyles}>Headers (JSON)</div>
+          <textarea
+            style={{
+              ...inputStyles,
+              minHeight: "60px",
+              resize: "vertical",
+            }}
+            placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}'
+            value={formData.headers}
+            onChange={(e) => handleInputChange("headers", e.target.value)}
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  // Render RAG specific configuration
+  const renderRAGConfig = () => (
+    <>
+      {/* RAG Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>RAG Configuration</div>
+
+        <div>
+          <div style={labelStyles}>Vector Store</div>
+          <select
+            style={selectStyles}
+            value={formData.vectorStore}
+            onChange={(e) => handleInputChange("vectorStore", e.target.value)}
+          >
+            {vectorStoreOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+        >
+          <div>
+            <div style={labelStyles}>Similarity Threshold</div>
+            <input
+              type="number"
+              style={inputStyles}
+              min="0"
+              max="1"
+              step="0.1"
+              value={formData.similarityThreshold}
+              onChange={(e) =>
+                handleInputChange("similarityThreshold", e.target.value)
+              }
+            />
+          </div>
+          <div>
+            <div style={labelStyles}>Top K Results</div>
+            <input
+              type="number"
+              style={inputStyles}
+              min="1"
+              max="20"
+              value={formData.topK}
+              onChange={(e) => handleInputChange("topK", e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Query Template</div>
+          <textarea
+            style={{
+              ...inputStyles,
+              minHeight: "60px",
+              resize: "vertical",
+            }}
+            placeholder="Enter the query template for RAG..."
+            value={formData.promptTemplate}
+            onChange={(e) =>
+              handleInputChange("promptTemplate", e.target.value)
+            }
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  // Render default configuration for other nodes
+  const renderDefaultConfig = () => (
+    <>
+      {/* Action Configuration Section */}
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>Action Configuration</div>
+
+        <div>
+          <div style={labelStyles}>Action Type *</div>
+          <select
+            style={selectStyles}
+            value={formData.actionType}
+            onChange={(e) => handleInputChange("actionType", e.target.value)}
+          >
+            <option value="">Select Action Type</option>
+            <option value="custom_action">Custom Action</option>
+            <option value="api_call">API Call</option>
+            <option value="data_processing">Data Processing</option>
+            <option value="notification">Send Notification</option>
+          </select>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Priority Level</div>
+          <select
+            style={selectStyles}
+            value={formData.priority}
+            onChange={(e) => handleInputChange("priority", e.target.value)}
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+    </>
+  );
+
+  // Determine which configuration to render based on node type
+  const renderNodeSpecificConfig = () => {
+    const nodeType = getNodeType();
+
+    if (nodeType === "AI Agent") {
+      return renderAIAgentConfig();
+    } else if (nodeType === "LLM") {
+      return renderLLMConfig();
+    } else if (nodeType.includes("Speak") || nodeType.includes("Listen")) {
+      return renderTTSSTTConfig();
+    } else if (nodeType.includes("Memory")) {
+      return renderMemoryConfig();
+    } else if (nodeType === "Webhook") {
+      return renderWebhookConfig();
+    } else if (nodeType === "RAG Query") {
+      return renderRAGConfig();
+    } else {
+      return renderDefaultConfig();
+    }
+  };
 
   return (
     <div style={panelStyles}>
@@ -206,86 +828,22 @@ export default function DetailsPanel({ selected, onClear }) {
             </div>
           </div>
 
-          {/* Action Configuration Section */}
-          <div style={sectionStyles}>
-            <div style={sectionTitleStyles}>Action Configuration</div>
+          {/* Node-specific configuration */}
+          {renderNodeSpecificConfig()}
 
-            <div>
-              <div style={labelStyles}>Action Type *</div>
-              <select
-                style={selectStyles}
-                value={formData.actionType}
-                onChange={(e) =>
-                  handleInputChange("actionType", e.target.value)
-                }
-              >
-                {actionTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <div style={labelStyles}>Trigger Condition *</div>
-              <select
-                style={selectStyles}
-                value={formData.triggerCondition}
-                onChange={(e) =>
-                  handleInputChange("triggerCondition", e.target.value)
-                }
-              >
-                {triggerOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <div style={labelStyles}>Priority Level</div>
-              <select
-                style={selectStyles}
-                value={formData.priority}
-                onChange={(e) => handleInputChange("priority", e.target.value)}
-              >
-                {priorityOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* API Configuration Section */}
+          {/* API Configuration Section - Common for all */}
           <div style={sectionStyles}>
             <div style={sectionTitleStyles}>API Configuration</div>
 
             <div>
-              <div style={labelStyles}>Callix.ai API Endpoint</div>
+              <div style={labelStyles}>API Endpoint</div>
               <input
                 type="text"
                 style={inputStyles}
-                placeholder="https://api.callix.ai/v1/..."
+                placeholder="https://api.example.com/v1/..."
                 value={formData.apiEndpoint}
                 onChange={(e) =>
                   handleInputChange("apiEndpoint", e.target.value)
-                }
-              />
-            </div>
-
-            <div>
-              <div style={labelStyles}>Webhook URL</div>
-              <input
-                type="text"
-                style={inputStyles}
-                placeholder="https://your-domain.com/webhook"
-                value={formData.webhookUrl}
-                onChange={(e) =>
-                  handleInputChange("webhookUrl", e.target.value)
                 }
               />
             </div>
@@ -295,14 +853,14 @@ export default function DetailsPanel({ selected, onClear }) {
               <input
                 type="password"
                 style={inputStyles}
-                placeholder="Enter your Callix.ai API key"
+                placeholder="Enter your API key"
                 value={formData.apiKey}
                 onChange={(e) => handleInputChange("apiKey", e.target.value)}
               />
             </div>
           </div>
 
-          {/* Advanced Settings Section */}
+          {/* Advanced Settings Section - Common for all */}
           <div style={sectionStyles}>
             <div style={sectionTitleStyles}>Advanced Settings</div>
 
