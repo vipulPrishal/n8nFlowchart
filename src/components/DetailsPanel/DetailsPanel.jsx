@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import ThemeToggler from "../ThemeToggler/ThemeToggler";
+import { MockAPIService } from "../../services/MockAPIService";
 
 export default function DetailsPanel({ selected, onClear }) {
   const { isDarkMode } = useTheme();
@@ -40,42 +41,71 @@ export default function DetailsPanel({ selected, onClear }) {
     topK: "5",
   });
 
+  // New states for backend interaction
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null);
+  const [nodeStats, setNodeStats] = useState(null);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [lastSelectedNodeId, setLastSelectedNodeId] = useState(null);
+  const [showApiKey, setShowApiKey] = useState(false);
+
   // Load existing data when node is selected
   useEffect(() => {
-    if (selected?.data?.workflowConfig) {
-      setFormData(selected.data.workflowConfig);
+    if (selected) {
+      // Only load if we don't have data for this node yet or a different node is selected
+      if (!nodeStats || selected.id !== lastSelectedNodeId) {
+        loadNodeData();
+      }
     } else {
-      setFormData({
-        actionType: "",
-        triggerCondition: "",
-        apiEndpoint: "",
-        webhookUrl: "",
-        apiKey: "",
-        priority: "medium",
-        retryAttempts: "3",
-        timeout: "30",
-        description: "",
-        agentType: "",
-        modelName: "",
-        temperature: "0.7",
-        maxTokens: "1000",
-        voiceProvider: "",
-        voiceId: "",
-        language: "en-US",
-        promptTemplate: "",
-        systemPrompt: "",
-        audioFormat: "mp3",
-        sampleRate: "22050",
-        memoryType: "",
-        memoryKey: "",
-        httpMethod: "POST",
-        headers: "",
-        vectorStore: "",
-        similarityThreshold: "0.8",
-        topK: "5",
-      });
+      // Clear data when no node is selected
+      setNodeStats(null);
+      setLastSelectedNodeId(null);
+      setLastSaved(null);
+      setSaveStatus(null);
+      setIsLoading(false);
     }
   }, [selected]);
+
+  // Simulate loading data from backend
+  const loadNodeData = async () => {
+    if (!selected) return;
+
+    setIsLoading(true);
+    setSaveStatus(null);
+    setLastSelectedNodeId(selected.id);
+
+    try {
+      // Get node type from the node data
+      const nodeType = getNodeType().toLowerCase().replace(/\s+/g, "_");
+
+      // Fetch configuration from backend
+      const response = await MockAPIService.fetchNodeConfig(
+        selected.id,
+        nodeType
+      );
+
+      if (response.success) {
+        setFormData((prev) => ({
+          ...prev,
+          ...response.data,
+        }));
+
+        // Also fetch node statistics
+        const statsResponse = await MockAPIService.getNodeStats(selected.id);
+        if (statsResponse.success) {
+          setNodeStats(statsResponse.data);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading node data:", error);
+      setSaveStatus({
+        type: "error",
+        message: "Failed to load node configuration",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -84,12 +114,35 @@ export default function DetailsPanel({ selected, onClear }) {
     }));
   };
 
-  const handleSave = () => {
-    if (selected) {
-      // Update the node data with workflow configuration
-      selected.data.workflowConfig = formData;
-      console.log("Workflow configuration saved:", formData);
-      // Here you would typically call a function to update the node in the flowchart
+  const handleSave = async () => {
+    if (!selected) return;
+
+    setIsLoading(true);
+    setSaveStatus(null);
+
+    try {
+      const nodeType = getNodeType().toLowerCase().replace(/\s+/g, "_");
+
+      // Save configuration to backend
+      const response = await MockAPIService.saveNodeConfig(
+        selected.id,
+        nodeType,
+        formData
+      );
+
+      if (response.success) {
+        setSaveStatus({ type: "success", message: response.message });
+        setLastSaved(new Date().toISOString());
+
+        // Update the node data
+        selected.data.workflowConfig = formData;
+        console.log("Workflow configuration saved:", formData);
+      }
+    } catch (error) {
+      console.error("Error saving node data:", error);
+      setSaveStatus({ type: "error", message: "Failed to save configuration" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -785,6 +838,88 @@ export default function DetailsPanel({ selected, onClear }) {
     }
   };
 
+  // Render node statistics
+  const renderNodeStats = () => {
+    if (!nodeStats) return null;
+
+    return (
+      <div style={sectionStyles}>
+        <div style={sectionTitleStyles}>Node Statistics</div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 12,
+            marginBottom: 12,
+          }}
+        >
+          <div>
+            <div style={labelStyles}>Total Calls</div>
+            <div
+              style={{
+                fontSize: "18px",
+                fontWeight: "bold",
+                color: isDarkMode ? "#10b981" : "#059669",
+              }}
+            >
+              {nodeStats.totalCalls.toLocaleString()}
+            </div>
+          </div>
+          <div>
+            <div style={labelStyles}>Success Rate</div>
+            <div
+              style={{
+                fontSize: "18px",
+                fontWeight: "bold",
+                color: isDarkMode ? "#10b981" : "#059669",
+              }}
+            >
+              {nodeStats.successRate}
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 12,
+            marginBottom: 12,
+          }}
+        >
+          <div>
+            <div style={labelStyles}>Avg Response Time</div>
+            <div style={{ fontSize: "16px", fontWeight: "600" }}>
+              {nodeStats.avgResponseTime}
+            </div>
+          </div>
+          <div>
+            <div style={labelStyles}>Total Cost</div>
+            <div
+              style={{
+                fontSize: "16px",
+                fontWeight: "600",
+                color: isDarkMode ? "#f59e0b" : "#d97706",
+              }}
+            >
+              {nodeStats.cost}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style={labelStyles}>Last Used</div>
+          <div
+            style={{ fontSize: "14px", color: isDarkMode ? "#9ca3af" : "#666" }}
+          >
+            {new Date(nodeStats.lastUsed).toLocaleString()}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={panelStyles}>
       <div style={titleStyles}>
@@ -800,6 +935,70 @@ export default function DetailsPanel({ selected, onClear }) {
         </div>
       ) : (
         <div>
+          {/* Loading indicator */}
+          {isLoading && !nodeStats && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                background: isDarkMode
+                  ? "rgba(0,0,0,0.8)"
+                  : "rgba(255,255,255,0.8)",
+                padding: "8px",
+                textAlign: "center",
+                fontSize: "14px",
+                color: isDarkMode ? "#10b981" : "#059669",
+                zIndex: 1000,
+                borderRadius: "8px 0 0 0",
+              }}
+            >
+              🔄 Loading configuration...
+            </div>
+          )}
+
+          {/* Save status message */}
+          {saveStatus && (
+            <div
+              style={{
+                padding: "8px 12px",
+                marginBottom: "16px",
+                borderRadius: "6px",
+                fontSize: "14px",
+                fontWeight: "500",
+                background:
+                  saveStatus.type === "success"
+                    ? isDarkMode
+                      ? "#065f46"
+                      : "#d1fae5"
+                    : isDarkMode
+                    ? "#7f1d1d"
+                    : "#fee2e2",
+                color:
+                  saveStatus.type === "success"
+                    ? isDarkMode
+                      ? "#10b981"
+                      : "#065f46"
+                    : isDarkMode
+                    ? "#fca5a5"
+                    : "#dc2626",
+                border: `1px solid ${
+                  saveStatus.type === "success"
+                    ? isDarkMode
+                      ? "#10b981"
+                      : "#10b981"
+                    : isDarkMode
+                    ? "#ef4444"
+                    : "#ef4444"
+                }`,
+              }}
+            >
+              {saveStatus.type === "success" ? "✅ " : "❌ "}
+              {saveStatus.message}
+            </div>
+          )}
+
           {/* Node Info Section */}
           <div style={sectionStyles}>
             <div style={sectionTitleStyles}>Node Information</div>
@@ -826,7 +1025,23 @@ export default function DetailsPanel({ selected, onClear }) {
                 {selected.id}
               </div>
             </div>
+            {lastSaved && (
+              <div>
+                <div style={labelStyles}>Last Saved</div>
+                <div
+                  style={{
+                    fontSize: "12px",
+                    color: isDarkMode ? "#10b981" : "#059669",
+                  }}
+                >
+                  {new Date(lastSaved).toLocaleString()}
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* Node Statistics */}
+          {renderNodeStats()}
 
           {/* Node-specific configuration */}
           {renderNodeSpecificConfig()}
@@ -850,13 +1065,63 @@ export default function DetailsPanel({ selected, onClear }) {
 
             <div>
               <div style={labelStyles}>API Key</div>
-              <input
-                type="password"
-                style={inputStyles}
-                placeholder="Enter your API key"
-                value={formData.apiKey}
-                onChange={(e) => handleInputChange("apiKey", e.target.value)}
-              />
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showApiKey ? "text" : "password"}
+                  style={{ ...inputStyles, paddingRight: "40px" }}
+                  placeholder="Enter your API key"
+                  value={formData.apiKey}
+                  onChange={(e) => handleInputChange("apiKey", e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey((v) => !v)}
+                  title={showApiKey ? "Hide API Key" : "Show API Key"}
+                  style={{
+                    position: "absolute",
+                    right: 8,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 4,
+                    color: isDarkMode ? "#9ca3af" : "#666",
+                  }}
+                >
+                  {showApiKey ? (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-10-8-10-8a18.5 18.5 0 0 1 5.06-6.94" />
+                      <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 10 8 10 8a18.43 18.43 0 0 1-3.95 5.94" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                      <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M1 12s3-8 11-8 11 8 11 8-3 8-11 8-11-8-11-8Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -918,24 +1183,22 @@ export default function DetailsPanel({ selected, onClear }) {
           <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
             <button
               onClick={handleSave}
-              style={saveButtonStyles}
-              onMouseEnter={(e) => {
-                e.target.style.background = "#059669";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = "#10b981";
+              disabled={isLoading}
+              style={{
+                ...saveButtonStyles,
+                opacity: isLoading ? 0.6 : 1,
+                cursor: isLoading ? "not-allowed" : "pointer",
               }}
             >
-              Save Configuration
+              {isLoading ? "Saving..." : "Save Configuration"}
             </button>
             <button
               onClick={onClear}
-              style={deleteButtonStyles}
-              onMouseEnter={(e) => {
-                e.target.style.background = isDarkMode ? "#b91c1c" : "#dc2626";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = isDarkMode ? "#dc2626" : "#ef4444";
+              disabled={isLoading}
+              style={{
+                ...deleteButtonStyles,
+                opacity: isLoading ? 0.6 : 1,
+                cursor: isLoading ? "not-allowed" : "pointer",
               }}
             >
               Delete Node
