@@ -52,8 +52,12 @@ export default function DetailsPanel({ selected, onClear }) {
   // Load existing data when node is selected
   useEffect(() => {
     if (selected) {
-      // Only load if we don't have data for this node yet or a different node is selected
-      if (!nodeStats || selected.id !== lastSelectedNodeId) {
+      // Always show loading for new node selections
+      if (selected.id !== lastSelectedNodeId) {
+        // Clear previous data first to ensure loading shows
+        setNodeStats(null);
+        setIsLoading(false);
+        setLastSelectedNodeId(selected.id);
         loadNodeData();
       }
     } else {
@@ -72,7 +76,6 @@ export default function DetailsPanel({ selected, onClear }) {
 
     setIsLoading(true);
     setSaveStatus(null);
-    setLastSelectedNodeId(selected.id);
 
     try {
       // Get node type from the node data
@@ -936,7 +939,7 @@ export default function DetailsPanel({ selected, onClear }) {
       ) : (
         <div>
           {/* Loading indicator */}
-          {isLoading && !nodeStats && (
+          {isLoading && (
             <div
               style={{
                 position: "absolute",
