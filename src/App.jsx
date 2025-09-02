@@ -4,6 +4,8 @@ import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import FlowChart from "./components/FlowChart/FlowChart";
 import Palette from "./components/Palette/Palette";
 import DetailsPanel from "./components/DetailsPanel/DetailsPanel";
+import NavBar from "./components/NavBar/NavBar";
+import "./App.css";
 
 const AppContent = () => {
   const [selectedNode, setSelectedNode] = React.useState(null);
@@ -26,27 +28,35 @@ const AppContent = () => {
   return (
     <>
       <div
-        className={`app-container w-screen h-screen`}
+        className={`app-container ${isDarkMode ? "dark" : "light"}`}
         style={{
-          display: "flex",
           background: isDarkMode ? "#000000" : "#f5f5f5",
           color: isDarkMode ? "#ffffff" : "#333333",
         }}
       >
-        {/* <Palette /> */}
-        {/* Palette with Clear Canvas button */}
-        <Palette onClearAll={() => clearAllRef.current?.()} />
+        {/* NavBar at the top */}
+        <NavBar />
 
-        <div style={{ flex: 1 }}>
-          <ReactFlowProvider>
-            <FlowChart
-              onNodeSelect={setSelectedNode}
-              onNodeDelete={deleteNodeRef}
-              clearAllRef={clearAllRef}
-            />
-          </ReactFlowProvider>
+        {/* Main content area */}
+        <div className="main-content">
+          {/* <Palette /> */}
+          {/* Palette with Clear Canvas button */}
+          <Palette onClearAll={() => clearAllRef.current?.()} />
+
+          <div style={{ flex: 1 }}>
+            <ReactFlowProvider>
+              <FlowChart
+                onNodeSelect={setSelectedNode}
+                onNodeDelete={deleteNodeRef}
+                clearAllRef={clearAllRef}
+              />
+            </ReactFlowProvider>
+          </div>
+          <DetailsPanel
+            selected={selectedNode}
+            onClear={handleClearSelection}
+          />
         </div>
-        <DetailsPanel selected={selectedNode} onClear={handleClearSelection} />
       </div>
     </>
   );

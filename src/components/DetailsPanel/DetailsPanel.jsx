@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
-import ThemeToggler from "../ThemeToggler/ThemeToggler";
 import { MockAPIService } from "../../services/MockAPIService";
 
 export default function DetailsPanel({ selected, onClear }) {
@@ -927,7 +926,6 @@ export default function DetailsPanel({ selected, onClear }) {
     <div style={panelStyles}>
       <div style={titleStyles}>
         <span>Workflow Configuration</span>
-        <ThemeToggler />
       </div>
 
       {!selected ? (
