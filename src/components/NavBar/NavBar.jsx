@@ -20,7 +20,7 @@ const NavBar = () => {
           <circle cx="6" cy="18" r="3" />
           <circle cx="18" cy="16" r="3" />
         </svg>
-        <span> CRM Workflow </span>
+        <span className="navbar-brand-text"> CRM Workflow </span>
       </div>
 
       {/* Navigation Items */}
