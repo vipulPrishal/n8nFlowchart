@@ -115,52 +115,58 @@ export default function Palette({ onClearAll }) {
   };
 
   const containerStyles = {
-    width: "20%",
-    minWidth: 240,
+    width: "100%",
     padding: 12,
     background: isDarkMode ? "#0f0f0f" : "#ffffff",
     color: isDarkMode ? "#fff" : "#333",
-    overflowY: "auto",
-    borderRight: `1px solid ${isDarkMode ? "#222" : "#e0e0e0"}`,
+    border: `1px solid ${isDarkMode ? "#222" : "#e0e0e0"}`,
+    borderRadius: "8px",
+    marginBottom: "16px",
   };
 
   const titleStyles = {
     fontWeight: 700,
-    marginBottom: 12,
+    marginBottom: 16,
     color: isDarkMode ? "#fff" : "#333",
-    fontSize: "20px", // Increased from 16px to 20px for much better readability
+    fontSize: "18px",
+    textAlign: "center",
+    padding: "8px 0",
+    borderBottom: `2px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
   };
 
   const itemStyles = {
-    padding: "10px 12px",
-    border: `1px solid ${isDarkMode ? "#444" : "#ccc"}`,
-    borderRadius: 8,
+    padding: "12px 16px",
+    border: `2px solid ${isDarkMode ? "#444" : "#e0e0e0"}`,
+    borderRadius: "8px",
     textAlign: "center",
     cursor: "grab",
     background: isDarkMode ? "#151515" : "#f8f9fa",
     color: isDarkMode ? "#fff" : "#333",
-    transition: "all 0.2s ease",
-    fontSize: "13px", // Reverted to original size
+    transition: "all 0.3s ease",
+    fontSize: "13px",
     fontWeight: "500",
+    marginBottom: "8px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   };
 
   const clearButtonStyles = {
     width: "100%",
-    padding: "10px",
-    background: "#ff4d4d",
+    padding: "12px",
+    background: "linear-gradient(135deg, #ff4d4d 0%, #ff3333 100%)",
     border: "none",
-    borderRadius: 6,
+    borderRadius: "8px",
     cursor: "pointer",
     color: "#fff",
     fontWeight: "bold",
-    transition: "all 0.2s ease",
-    fontSize: "16px", // Increased from 14px to 16px for much better readability
+    transition: "all 0.3s ease",
+    fontSize: "16px",
+    boxShadow: "0 4px 8px rgba(255, 77, 77, 0.3)",
   };
 
   return (
     <div style={containerStyles}>
-      <div style={titleStyles}>Blocks (drag onto canvas)</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      <div style={titleStyles}>Workflow Blocks</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
         {items.map((it) => (
           <div
             key={it.key}
@@ -169,9 +175,15 @@ export default function Palette({ onClearAll }) {
             style={itemStyles}
             onMouseEnter={(e) => {
               e.target.style.background = isDarkMode ? "#2a2a2a" : "#e9ecef";
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+              e.target.style.borderColor = isDarkMode ? "#10b981" : "#10b981";
             }}
             onMouseLeave={(e) => {
               e.target.style.background = isDarkMode ? "#151515" : "#f8f9fa";
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+              e.target.style.borderColor = isDarkMode ? "#444" : "#e0e0e0";
             }}
           >
             {it.label}
@@ -185,13 +197,15 @@ export default function Palette({ onClearAll }) {
           onClick={() => onClearAll?.()}
           style={clearButtonStyles}
           onMouseEnter={(e) => {
-            e.target.style.background = "#ff3333";
+            e.target.style.transform = "translateY(-2px)";
+            e.target.style.boxShadow = "0 6px 12px rgba(255, 77, 77, 0.4)";
           }}
           onMouseLeave={(e) => {
-            e.target.style.background = "#ff4d4d";
+            e.target.style.transform = "translateY(0)";
+            e.target.style.boxShadow = "0 4px 8px rgba(255, 77, 77, 0.3)";
           }}
         >
-          Clear Canvas
+          🗑️ Clear Canvas
         </button>
       </div>
     </div>

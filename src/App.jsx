@@ -1,28 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { ReactFlowProvider } from "reactflow";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import FlowChart from "./components/FlowChart/FlowChart";
 import Palette from "./components/Palette/Palette";
 import DetailsPanel from "./components/DetailsPanel/DetailsPanel";
 import NavBar from "./components/NavBar/NavBar";
+import WorkflowCounter from "./components/WorkflowCounter/WorkflowCounter";
+import SearchBar from "./components/SearchBar/SearchBar";
 import "./App.css";
 
 const AppContent = () => {
-  const [selectedNode, setSelectedNode] = React.useState(null);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const workflowCount = 5;
+  const activeWorkflowCount = 3;
   const deleteNodeRef = React.useRef(null);
   const clearAllRef = React.useRef(null);
   const { isDarkMode } = useTheme();
 
   const handleClearSelection = () => {
     if (selectedNode && deleteNodeRef.current) {
-      // Delete the selected node
       deleteNodeRef.current(selectedNode.id);
-      // Clear the selection
       setSelectedNode(null);
     } else {
-      // Just clear selection if no node is selected or delete function not available
       setSelectedNode(null);
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    console.log("Searching for:", searchTerm);
+    // Add your search logic here
   };
 
   return (
@@ -32,18 +38,53 @@ const AppContent = () => {
         style={{
           background: isDarkMode ? "#000000" : "#f5f5f5",
           color: isDarkMode ? "#ffffff" : "#333333",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
         }}
       >
-        {/* NavBar at the top */}
+        {/* NavBar */}
         <NavBar />
 
         {/* Main content area */}
-        <div className="main-content">
-          {/* <Palette /> */}
-          {/* Palette with Clear Canvas button */}
-          <Palette onClearAll={() => clearAllRef.current?.()} />
+        <div
+          className="main-content"
+          style={{
+            flex: 1,
+            display: "flex",
+            height: "calc(100vh - 80px)", // Subtract navbar height
+            overflow: "hidden",
+          }}
+        >
+          {/* Left Sidebar */}
+          <div
+            className="left-sidebar"
+            style={{
+              width: "20%",
+              minWidth: 240,
+              height: "100%",
+              overflowY: "auto",
+              padding: "16px",
+              borderRight: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
+              background: isDarkMode ? "#0f0f0f" : "#f8f9fa",
+            }}
+          >
+            {/* Workflow Counter */}
+            <WorkflowCounter
+              count={workflowCount}
+              activeCount={activeWorkflowCount}
+            />
 
-          <div style={{ flex: 1 }}>
+            {/* Search Bar */}
+            <SearchBar onSearch={handleSearch} />
+
+            {/* Palette */}
+            <Palette onClearAll={() => clearAllRef.current?.()} />
+          </div>
+
+          {/* Center - FlowChart */}
+          <div style={{ flex: 1, height: "100%" }}>
             <ReactFlowProvider>
               <FlowChart
                 onNodeSelect={setSelectedNode}
@@ -52,6 +93,8 @@ const AppContent = () => {
               />
             </ReactFlowProvider>
           </div>
+
+          {/* Right Side - Details Panel */}
           <DetailsPanel
             selected={selectedNode}
             onClear={handleClearSelection}

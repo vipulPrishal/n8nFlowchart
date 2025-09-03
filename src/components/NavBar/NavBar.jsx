@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
+import NotificationBell from "../NotificationBell/NotificationBell";
 
 const NavBar = () => {
   const { isDarkMode, toggleTheme } = useTheme();
+  const [showQuickActions, setShowQuickActions] = useState(false);
+
+  const quickActions = [
+    {
+      label: "New Workflow",
+      icon: "➕",
+      action: () => console.log("New Workflow"),
+    },
+    { label: "Import JSON", icon: "📥", action: () => console.log("Import") },
+    { label: "Export All", icon: "📤", action: () => console.log("Export") },
+    { label: "Run Test", icon: "▶️", action: () => console.log("Test") },
+  ];
 
   return (
     <nav className="navbar">
@@ -32,8 +45,40 @@ const NavBar = () => {
         <button className="navbar-item">Settings</button>
       </div>
 
-      {/* Right Side - Theme Toggle */}
+      {/* Right Side - Quick Actions, Notifications & Theme Toggle */}
       <div className="navbar-right">
+        {/* Quick Actions Dropdown */}
+        <div className="quick-actions-container">
+          <button
+            className="quick-actions-btn"
+            onClick={() => setShowQuickActions(!showQuickActions)}
+            title="Quick Actions"
+          >
+            ⚡ Quick Actions
+          </button>
+
+          {showQuickActions && (
+            <div className="quick-actions-dropdown">
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  className="quick-action-item"
+                  onClick={() => {
+                    action.action();
+                    setShowQuickActions(false);
+                  }}
+                >
+                  <span className="action-icon">{action.icon}</span>
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Notification Bell */}
+        <NotificationBell />
+
         {/* Status Indicator */}
         <div className="status-indicator">
           <div className="status-dot"></div>
@@ -47,7 +92,6 @@ const NavBar = () => {
           title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
         >
           {isDarkMode ? (
-            // Sun icon for dark mode (click to switch to light)
             <svg
               width="20"
               height="20"
@@ -69,7 +113,6 @@ const NavBar = () => {
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
             </svg>
           ) : (
-            // Moon icon for light mode (click to switch to dark)
             <svg
               width="20"
               height="20"
