@@ -11,6 +11,7 @@ import "./App.css";
 
 const AppContent = () => {
   const [selectedNode, setSelectedNode] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const workflowCount = 5;
   const activeWorkflowCount = 3;
   const deleteNodeRef = React.useRef(null);
@@ -27,8 +28,7 @@ const AppContent = () => {
   };
 
   const handleSearch = (searchTerm) => {
-    console.log("Searching for:", searchTerm);
-    // Add your search logic here
+    setSearchTerm(searchTerm);
   };
 
   return (
@@ -80,7 +80,10 @@ const AppContent = () => {
             <SearchBar onSearch={handleSearch} />
 
             {/* Palette */}
-            <Palette onClearAll={() => clearAllRef.current?.()} />
+            <Palette
+              onClearAll={() => clearAllRef.current?.()}
+              searchTerm={searchTerm}
+            />
           </div>
 
           {/* Center - FlowChart */}

@@ -106,8 +106,15 @@ const items = [
   },
 ];
 
-export default function Palette({ onClearAll }) {
+export default function Palette({ onClearAll, searchTerm = "" }) {
   const { isDarkMode } = useTheme();
+
+  // Filter items based on search term (trim extra spaces)
+  const filteredItems = items.filter((item) => {
+    const cleanSearchTerm = searchTerm.trim().toLowerCase();
+    const cleanItemLabel = item.label.trim().toLowerCase();
+    return cleanItemLabel.includes(cleanSearchTerm);
+  });
 
   const onDragStart = (e, spec) => {
     e.dataTransfer.setData("application/reactflow", JSON.stringify(spec));
@@ -163,33 +170,62 @@ export default function Palette({ onClearAll }) {
     boxShadow: "0 4px 8px rgba(255, 77, 77, 0.3)",
   };
 
+  const noResultsStyles = {
+    textAlign: "center",
+    padding: "20px",
+    color: isDarkMode ? "#9ca3af" : "#666",
+    fontSize: "14px",
+    fontStyle: "italic",
+  };
+
   return (
     <div style={containerStyles}>
-      <div style={titleStyles}>Workflow Blocks</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
-        {items.map((it) => (
+      <div style={titleStyles}>
+        Workflow Blocks
+        {searchTerm && (
           <div
-            key={it.key}
-            draggable
-            onDragStart={(e) => onDragStart(e, it)}
-            style={itemStyles}
-            onMouseEnter={(e) => {
-              e.target.style.background = isDarkMode ? "#2a2a2a" : "#e9ecef";
-              e.target.style.transform = "translateY(-2px)";
-              e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
-              e.target.style.borderColor = isDarkMode ? "#10b981" : "#10b981";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = isDarkMode ? "#151515" : "#f8f9fa";
-              e.target.style.transform = "translateY(0)";
-              e.target.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
-              e.target.style.borderColor = isDarkMode ? "#444" : "#e0e0e0";
+            style={{
+              fontSize: "14px",
+              fontWeight: "400",
+              marginTop: "4px",
+              color: isDarkMode ? "#9ca3af" : "#666",
             }}
           >
-            {it.label}
+            Showing {filteredItems.length} of {items.length} blocks
           </div>
-        ))}
+        )}
       </div>
+
+      {filteredItems.length > 0 ? (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
+          {filteredItems.map((it) => (
+            <div
+              key={it.key}
+              draggable
+              onDragStart={(e) => onDragStart(e, it)}
+              style={itemStyles}
+              onMouseEnter={(e) => {
+                e.target.style.background = isDarkMode ? "#2a2a2a" : "#e9ecef";
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+                e.target.style.borderColor = isDarkMode ? "#10b981" : "#10b981";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = isDarkMode ? "#151515" : "#f8f9fa";
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+                e.target.style.borderColor = isDarkMode ? "#444" : "#e0e0e0";
+              }}
+            >
+              {it.label}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={noResultsStyles}>
+          No workflow blocks found matching "{searchTerm.trim()}"
+        </div>
+      )}
 
       {/* Clear button row */}
       <div style={{ marginTop: 16 }}>
