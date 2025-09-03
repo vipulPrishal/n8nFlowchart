@@ -7,7 +7,7 @@ import DetailsPanel from "./components/DetailsPanel/DetailsPanel";
 import NavBar from "./components/NavBar/NavBar";
 import WorkflowCounter from "./components/WorkflowCounter/WorkflowCounter";
 import SearchBar from "./components/SearchBar/SearchBar";
-import "./App.css";
+// import "./App.css";
 
 const AppContent = () => {
   const [selectedNode, setSelectedNode] = useState(null);
@@ -17,6 +17,10 @@ const AppContent = () => {
   const deleteNodeRef = React.useRef(null);
   const clearAllRef = React.useRef(null);
   const { isDarkMode } = useTheme();
+
+  const handleNodeSelect = (node) => {
+    setSelectedNode(node);
+  };
 
   const handleClearSelection = () => {
     if (selectedNode && deleteNodeRef.current) {
@@ -31,44 +35,37 @@ const AppContent = () => {
     setSearchTerm(searchTerm);
   };
 
+  const handleClearAll = () => {
+    if (clearAllRef.current) {
+      clearAllRef.current();
+    }
+  };
+
+  const handleDeleteNode = () => {
+    if (deleteNodeRef.current) {
+      deleteNodeRef.current();
+    }
+  };
+
   return (
     <>
       <div
-        className={`app-container ${isDarkMode ? "dark" : "light"}`}
-        style={{
-          background: isDarkMode ? "#000000" : "#f5f5f5",
-          color: isDarkMode ? "#ffffff" : "#333333",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
+        className={`h-screen flex flex-col overflow-hidden ${
+          isDarkMode ? "bg-black text-white" : "bg-gray-100 text-gray-800"
+        }`}
       >
         {/* NavBar */}
         <NavBar />
 
         {/* Main content area */}
-        <div
-          className="main-content"
-          style={{
-            flex: 1,
-            display: "flex",
-            height: "calc(100vh - 80px)", // Subtract navbar height
-            overflow: "hidden",
-          }}
-        >
+        <div className="flex-1 flex h-[calc(100vh-80px)] overflow-hidden">
           {/* Left Sidebar */}
           <div
-            className="left-sidebar"
-            style={{
-              width: "20%",
-              minWidth: 240,
-              height: "100%",
-              overflowY: "auto",
-              padding: "16px",
-              borderRight: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-              background: isDarkMode ? "#0f0f0f" : "#f8f9fa",
-            }}
+            className={`left-sidebar w-1/5 min-w-60 h-full overflow-y-auto p-4 border-r ${
+              isDarkMode
+                ? "border-gray-700 bg-gray-900"
+                : "border-gray-200 bg-gray-50"
+            }`}
           >
             {/* Workflow Counter */}
             <WorkflowCounter
@@ -80,27 +77,25 @@ const AppContent = () => {
             <SearchBar onSearch={handleSearch} />
 
             {/* Palette */}
-            <Palette
-              onClearAll={() => clearAllRef.current?.()}
-              searchTerm={searchTerm}
-            />
+            <Palette onClearAll={handleClearAll} searchTerm={searchTerm} />
           </div>
 
           {/* Center - FlowChart */}
-          <div style={{ flex: 1, height: "100%" }}>
+          <div className="flex-1 h-full">
             <ReactFlowProvider>
               <FlowChart
-                onNodeSelect={setSelectedNode}
-                onNodeDelete={deleteNodeRef}
+                onNodeSelect={handleNodeSelect}
+                onNodeDelete={handleDeleteNode}
                 clearAllRef={clearAllRef}
               />
             </ReactFlowProvider>
           </div>
 
-          {/* Right Side - Details Panel */}
+          {/* Right Sidebar - Details Panel */}
           <DetailsPanel
             selected={selectedNode}
             onClear={handleClearSelection}
+            deleteNodeRef={deleteNodeRef}
           />
         </div>
       </div>

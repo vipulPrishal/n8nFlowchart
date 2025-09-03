@@ -121,75 +121,25 @@ export default function Palette({ onClearAll, searchTerm = "" }) {
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const containerStyles = {
-    width: "100%",
-    padding: 12,
-    background: isDarkMode ? "#0f0f0f" : "#ffffff",
-    color: isDarkMode ? "#fff" : "#333",
-    border: `1px solid ${isDarkMode ? "#222" : "#e0e0e0"}`,
-    borderRadius: "8px",
-    marginBottom: "16px",
-  };
-
-  const titleStyles = {
-    fontWeight: 700,
-    marginBottom: 16,
-    color: isDarkMode ? "#fff" : "#333",
-    fontSize: "18px",
-    textAlign: "center",
-    padding: "8px 0",
-    borderBottom: `2px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-  };
-
-  const itemStyles = {
-    padding: "12px 16px",
-    border: `2px solid ${isDarkMode ? "#444" : "#e0e0e0"}`,
-    borderRadius: "8px",
-    textAlign: "center",
-    cursor: "grab",
-    background: isDarkMode ? "#151515" : "#f8f9fa",
-    color: isDarkMode ? "#fff" : "#333",
-    transition: "all 0.3s ease",
-    fontSize: "13px",
-    fontWeight: "500",
-    marginBottom: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  };
-
-  const clearButtonStyles = {
-    width: "100%",
-    padding: "12px",
-    background: "linear-gradient(135deg, #ff4d4d 0%, #ff3333 100%)",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    color: "#fff",
-    fontWeight: "bold",
-    transition: "all 0.3s ease",
-    fontSize: "16px",
-    boxShadow: "0 4px 8px rgba(255, 77, 77, 0.3)",
-  };
-
-  const noResultsStyles = {
-    textAlign: "center",
-    padding: "20px",
-    color: isDarkMode ? "#9ca3af" : "#666",
-    fontSize: "14px",
-    fontStyle: "italic",
-  };
-
   return (
-    <div style={containerStyles}>
-      <div style={titleStyles}>
+    <div
+      className={`w-full p-3 rounded-lg border mb-4 ${
+        isDarkMode
+          ? "bg-gray-900 text-white border-gray-700"
+          : "bg-white text-gray-800 border-gray-200"
+      }`}
+    >
+      <div
+        className={`font-bold mb-4 text-lg text-center py-2 border-b-2 ${
+          isDarkMode ? "border-gray-600" : "border-gray-200"
+        }`}
+      >
         Workflow Blocks
         {searchTerm && (
           <div
-            style={{
-              fontSize: "14px",
-              fontWeight: "400",
-              marginTop: "4px",
-              color: isDarkMode ? "#9ca3af" : "#666",
-            }}
+            className={`text-sm font-normal mt-1 ${
+              isDarkMode ? "text-gray-400" : "text-gray-600"
+            }`}
           >
             Showing {filteredItems.length} of {items.length} blocks
           </div>
@@ -197,49 +147,37 @@ export default function Palette({ onClearAll, searchTerm = "" }) {
       </div>
 
       {filteredItems.length > 0 ? (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8 }}>
+        <div className="grid grid-cols-1 gap-2">
           {filteredItems.map((it) => (
             <div
               key={it.key}
               draggable
               onDragStart={(e) => onDragStart(e, it)}
-              style={itemStyles}
-              onMouseEnter={(e) => {
-                e.target.style.background = isDarkMode ? "#2a2a2a" : "#e9ecef";
-                e.target.style.transform = "translateY(-2px)";
-                e.target.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
-                e.target.style.borderColor = isDarkMode ? "#10b981" : "#10b981";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = isDarkMode ? "#151515" : "#f8f9fa";
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
-                e.target.style.borderColor = isDarkMode ? "#444" : "#e0e0e0";
-              }}
+              className={`px-4 py-3 border-2 rounded-lg text-center cursor-grab transition-all duration-300 text-sm font-medium mb-2 shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:border-green-500 ${
+                isDarkMode
+                  ? "bg-gray-800 text-white border-gray-600 hover:bg-gray-700"
+                  : "bg-gray-50 text-gray-800 border-gray-200 hover:bg-gray-100"
+              }`}
             >
               {it.label}
             </div>
           ))}
         </div>
       ) : (
-        <div style={noResultsStyles}>
+        <div
+          className={`text-center py-5 text-sm italic ${
+            isDarkMode ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
           No workflow blocks found matching "{searchTerm.trim()}"
         </div>
       )}
 
       {/* Clear button row */}
-      <div style={{ marginTop: 16 }}>
+      <div className="mt-4">
         <button
           onClick={() => onClearAll?.()}
-          style={clearButtonStyles}
-          onMouseEnter={(e) => {
-            e.target.style.transform = "translateY(-2px)";
-            e.target.style.boxShadow = "0 6px 12px rgba(255, 77, 77, 0.4)";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = "translateY(0)";
-            e.target.style.boxShadow = "0 4px 8px rgba(255, 77, 77, 0.3)";
-          }}
+          className="w-full py-3 bg-gradient-to-r from-red-500 to-red-600 border-none rounded-lg cursor-pointer text-white font-bold transition-all duration-300 text-base shadow-lg shadow-red-500/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-500/40"
         >
           🗑️ Clear Canvas
         </button>

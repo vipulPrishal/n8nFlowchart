@@ -7,26 +7,11 @@ const ThemeToggler = () => {
   return (
     <button
       onClick={toggleTheme}
-      style={{
-        position: "absolute",
-        top: 12,
-        right: 12,
-        width: 40,
-        height: 40,
-        borderRadius: "50%",
-        border: "none",
-        background: isDarkMode ? "#2a2a2a" : "#f0f0f0",
-        color: isDarkMode ? "#ffd700" : "#f39c12",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "18px",
-        transition: "all 0.3s ease",
-        boxShadow: isDarkMode
-          ? "0 2px 8px rgba(0, 0, 0, 0.3)"
-          : "0 2px 8px rgba(0, 0, 0, 0.1)",
-      }}
+      className={`absolute top-3 right-3 w-10 h-10 rounded-full border-none cursor-pointer flex items-center justify-center text-lg transition-all duration-300 shadow-lg hover:scale-105 ${
+        isDarkMode
+          ? "bg-gray-700 text-yellow-400 shadow-gray-900/30"
+          : "bg-gray-100 text-amber-500 shadow-gray-900/10"
+      }`}
       title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDarkMode ? (
@@ -71,4 +56,3 @@ const ThemeToggler = () => {
 };
 
 export default ThemeToggler;
-

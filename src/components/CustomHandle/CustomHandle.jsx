@@ -15,35 +15,29 @@ const CustomHandle = ({
   color = "#fff",
   ...rest
 }) => {
-  // Giving custom styles for different shapes to achieve a diamond shape when the user
-  //  pases shape as
-  const shapeStyles = {
-    circle: {
-      borderRadius: "50%",
-      border: `2px solid ${color}`,
-      background: "transparent",
-    },
-    square: {
-      borderRadius: "2px",
-      border: `2px solid ${color}`,
-      background: "transparent",
-    },
-    diamond: {
-      transform: "rotate(45deg)",
-      borderRadius: "2px",
-      border: `2px solid ${color}`,
-      background: "transparent",
-    },
+  // Helper function to get Tailwind classes based on shape
+  const getShapeClasses = (shape) => {
+    switch (shape) {
+      case "circle":
+        return "rounded-full border-2 bg-transparent";
+      case "square":
+        return "rounded-sm border-2 bg-transparent";
+      case "diamond":
+        return "rotate-45 rounded-sm border-2 bg-transparent";
+      default:
+        return "rounded-full border-2 bg-transparent";
+    }
   };
 
   return (
     <>
       <Handle
         {...rest}
+        className={getShapeClasses(shape)}
         style={{
           width: size,
           height: size,
-          ...shapeStyles[shape],
+          borderColor: color,
         }}
       />
     </>

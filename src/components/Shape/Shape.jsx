@@ -11,22 +11,16 @@ const Shape = ({
 }) => {
   const { isDarkMode } = useTheme();
 
-  const borderColor = isDarkMode ? "#fff" : "#333";
-  const textColor = isDarkMode ? "#fff" : "#333";
-
   return (
     <div
-      className="border-2 flex items-center justify-center font-medium text-center"
+      className={`border-2 flex items-center justify-center font-semibold text-center text-2xl leading-tight ${
+        isDarkMode ? "border-white text-white" : "border-gray-800 text-gray-800"
+      }`}
       style={{
         width: `${w}px`, // number → px
         height: `${h}px`, // number → px
         borderRadius: radius,
         paddingBottom: `${padding ? "5px" : "0px"}`, // if padding is true then 10px else 0px
-        borderColor: borderColor,
-        color: textColor,
-        fontSize: "22px", // Increased from 18px to 22px for much better readability
-        lineHeight: "1.2",
-        fontWeight: "600",
       }}
     >
       {!hideText && children}

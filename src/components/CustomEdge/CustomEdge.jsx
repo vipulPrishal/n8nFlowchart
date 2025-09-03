@@ -98,13 +98,14 @@ export default function CustomEdge({
       <BaseEdge
         id={id}
         path={edgePath}
-        style={{ stroke: strokeColor, strokeWidth: 2, strokeDasharray }}
+        className="stroke-2"
+        style={{ stroke: strokeColor, strokeDasharray }}
       />
 
       {arrow && arrowData && (
         <g
           transform={`translate(${arrowData.x}, ${arrowData.y}) rotate(${arrowData.angle})`}
-          style={{ pointerEvents: "none" }}
+          className="pointer-events-none"
         >
           <path d="M -6 -4 L 0 0 L -6 4 z" fill={strokeColor} stroke="none" />
         </g>

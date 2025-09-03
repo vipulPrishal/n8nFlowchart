@@ -27,57 +27,6 @@ export default function NotificationBell() {
 
   const unreadCount = notifications.length;
 
-  const containerStyles = {
-    position: "relative",
-    marginRight: "16px",
-  };
-
-  const bellStyles = {
-    background: "none",
-    border: "none",
-    fontSize: "20px",
-    cursor: "pointer",
-    color: isDarkMode ? "#9ca3af" : "#666",
-    padding: "8px",
-    borderRadius: "50%",
-    transition: "all 0.2s ease",
-    position: "relative",
-  };
-
-  const badgeStyles = {
-    position: "absolute",
-    top: "0",
-    right: "0",
-    background: "#ef4444",
-    color: "white",
-    fontSize: "10px",
-    padding: "2px 6px",
-    borderRadius: "10px",
-    minWidth: "18px",
-    textAlign: "center",
-  };
-
-  const dropdownStyles = {
-    position: "absolute",
-    top: "100%",
-    right: 0,
-    background: isDarkMode ? "#1a1a1a" : "#ffffff",
-    border: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-    borderRadius: "8px",
-    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
-    minWidth: "300px",
-    zIndex: 1000,
-    marginTop: "8px",
-  };
-
-  const notificationItemStyles = (type) => ({
-    padding: "12px 16px",
-    borderBottom: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "12px",
-  });
-
   const typeIcon = (type) => {
     switch (type) {
       case "success":
@@ -105,31 +54,36 @@ export default function NotificationBell() {
   };
 
   return (
-    <div style={containerStyles}>
+    <div className="relative mr-4">
       <button
-        style={bellStyles}
+        className={`bg-transparent border-none text-xl cursor-pointer p-2 rounded-full transition-all duration-200 relative hover:bg-gray-200 dark:hover:bg-gray-700 ${
+          isDarkMode ? "text-gray-400" : "text-gray-600"
+        }`}
         onClick={() => setShowNotifications(!showNotifications)}
         title="Notifications"
-        onMouseEnter={(e) => {
-          e.target.style.background = isDarkMode ? "#333" : "#f0f0f0";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.background = "transparent";
-        }}
       >
         🔔
-        {unreadCount > 0 && <span style={badgeStyles}>{unreadCount}</span>}
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+            {unreadCount}
+          </span>
+        )}
       </button>
 
       {showNotifications && (
-        <div style={dropdownStyles}>
+        <div
+          className={`absolute top-full right-0 min-w-[300px] z-50 mt-2 rounded-lg shadow-xl ${
+            isDarkMode
+              ? "bg-gray-800 border border-gray-700"
+              : "bg-white border border-gray-200"
+          }`}
+        >
           <div
-            style={{
-              padding: "16px",
-              borderBottom: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-              fontWeight: "600",
-              color: isDarkMode ? "#fff" : "#333",
-            }}
+            className={`px-4 py-4 border-b font-semibold ${
+              isDarkMode
+                ? "border-gray-700 text-white"
+                : "border-gray-200 text-gray-800"
+            }`}
           >
             Notifications ({unreadCount})
           </div>
@@ -137,26 +91,22 @@ export default function NotificationBell() {
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              style={notificationItemStyles(notification.type)}
+              className={`px-4 py-3 border-b flex items-start gap-3 ${
+                isDarkMode ? "border-gray-700" : "border-gray-200"
+              }`}
             >
-              <span style={{ fontSize: "16px" }}>
-                {typeIcon(notification.type)}
-              </span>
-              <div style={{ flex: 1 }}>
+              <span className="text-base">{typeIcon(notification.type)}</span>
+              <div className="flex-1">
                 <div
-                  style={{
-                    fontSize: "14px",
-                    color: isDarkMode ? "#fff" : "#333",
-                    marginBottom: "4px",
-                  }}
+                  className={`text-sm mb-1 ${
+                    isDarkMode ? "text-white" : "text-gray-800"
+                  }`}
                 >
                   {notification.message}
                 </div>
                 <div
-                  style={{
-                    fontSize: "12px",
-                    color: typeColor(notification.type),
-                  }}
+                  className="text-xs"
+                  style={{ color: typeColor(notification.type) }}
                 >
                   {notification.time}
                 </div>
@@ -165,15 +115,9 @@ export default function NotificationBell() {
           ))}
 
           <div
-            style={{
-              padding: "12px 16px",
-              textAlign: "center",
-              borderTop: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-              cursor: "pointer",
-              color: isDarkMode ? "#10b981" : "#10b981",
-              fontSize: "14px",
-              fontWeight: "500",
-            }}
+            className={`px-4 py-3 text-center border-t cursor-pointer text-green-500 text-sm font-medium ${
+              isDarkMode ? "border-gray-700" : "border-gray-200"
+            }`}
           >
             View All Notifications
           </div>

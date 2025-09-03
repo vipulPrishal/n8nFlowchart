@@ -19,77 +19,34 @@ export default function SearchBar({
     onSearch?.(""); // Clear search
   };
 
-  const containerStyles = {
-    position: "relative",
-    marginBottom: "16px",
-  };
-
-  const inputStyles = {
-    width: "100%",
-    padding: "12px 16px 12px 48px",
-    border: `2px solid ${isDarkMode ? "#444" : "#e0e0e0"}`,
-    borderRadius: "25px",
-    background: isDarkMode ? "#2a2a2a" : "#ffffff",
-    color: isDarkMode ? "#fff" : "#333",
-    fontSize: "16px",
-    transition: "all 0.3s ease",
-  };
-
-  const searchIconStyles = {
-    position: "absolute",
-    left: "16px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    color: isDarkMode ? "#9ca3af" : "#666",
-    fontSize: "18px",
-  };
-
-  const clearButtonStyles = {
-    position: "absolute",
-    right: "16px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    background: "none",
-    border: "none",
-    color: isDarkMode ? "#9ca3af" : "#666",
-    fontSize: "16px",
-    cursor: "pointer",
-    padding: "4px",
-    borderRadius: "50%",
-    display: searchTerm ? "block" : "none",
-    transition: "all 0.3s ease",
-  };
-
   return (
-    <div style={containerStyles}>
-      <span style={searchIconStyles}>🔍</span>
+    <div className="relative mb-4">
+      <span
+        className={`absolute left-4 top-1/2 transform -translate-y-1/2 text-lg ${
+          isDarkMode ? "text-gray-400" : "text-gray-600"
+        }`}
+      >
+        🔍
+      </span>
       <input
         type="text"
-        style={inputStyles}
+        className={`w-full pl-12 pr-12 py-3 border-2 rounded-full text-base transition-all duration-300 focus:border-green-500 focus:shadow-lg focus:shadow-green-500/10 focus:outline-none ${
+          isDarkMode
+            ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+            : "bg-white border-gray-200 text-gray-800 placeholder-gray-500"
+        }`}
         placeholder={placeholder}
         value={searchTerm}
         onChange={handleSearchChange}
-        onFocus={(e) => {
-          e.target.style.borderColor = isDarkMode ? "#10b981" : "#10b981";
-          e.target.style.boxShadow = "0 0 0 3px rgba(16, 185, 129, 0.1)";
-        }}
-        onBlur={(e) => {
-          e.target.style.borderColor = isDarkMode ? "#444" : "#e0e0e0";
-          e.target.style.boxShadow = "none";
-        }}
       />
       {searchTerm && (
         <button
           onClick={handleClearSearch}
-          style={clearButtonStyles}
-          onMouseEnter={(e) => {
-            e.target.style.color = isDarkMode ? "#fff" : "#333";
-            e.target.style.background = isDarkMode ? "#444" : "#e0e0e0";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.color = isDarkMode ? "#9ca3af" : "#666";
-            e.target.style.background = "none";
-          }}
+          className={`absolute right-4 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-base cursor-pointer p-1 rounded-full transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700 ${
+            isDarkMode
+              ? "text-gray-400 hover:text-white"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
           title="Clear search"
         >
           ✕

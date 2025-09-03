@@ -137,34 +137,14 @@ const Node = ({ data, children, isConnectable, id }) => {
             onChange={handleTextChange}
             onBlur={handleTextBlur}
             onKeyDown={handleKeyPress}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 1000,
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              color: labelColor,
-              fontSize: "22px",
-              fontWeight: "600",
-              textAlign: "center",
-              width: "100%",
-              height: "100%",
-              padding: "8px",
-              borderRadius: "inherit",
-            }}
+            className="absolute inset-0 z-50 bg-transparent border-none outline-none text-center w-full h-full p-2 rounded-inherit text-2xl font-semibold"
+            style={{ color: labelColor }}
             autoFocus
           />
         ) : null}
         <div
           onClick={handleSingleClick}
-          style={{
-            cursor: "pointer",
-            position: "relative",
-          }}
+          className="cursor-pointer relative"
           title="Click to edit text"
         >
           {isEditing

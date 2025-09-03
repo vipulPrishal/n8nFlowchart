@@ -1193,6 +1193,7 @@ export default function DetailsPanel({ selected, onClear }) {
             >
               {isLoading ? "Saving..." : "Save Configuration"}
             </button>
+
             <button
               onClick={onClear}
               disabled={isLoading}

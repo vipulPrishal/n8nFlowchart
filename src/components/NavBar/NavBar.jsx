@@ -18,9 +18,15 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="navbar">
+    <nav
+      className={`h-20 flex items-center justify-between px-8 flex-shrink-0 shadow-lg ${
+        isDarkMode
+          ? "bg-gray-900 border-b border-gray-700"
+          : "bg-white border-b border-gray-200"
+      }`}
+    >
       {/* Logo and Brand */}
-      <div className="navbar-logo">
+      <div className="flex items-center gap-4 text-xl font-semibold">
         <svg
           width="24"
           height="24"
@@ -33,24 +39,71 @@ const NavBar = () => {
           <circle cx="6" cy="18" r="3" />
           <circle cx="18" cy="16" r="3" />
         </svg>
-        <span className="navbar-brand-text"> CRM Workflow </span>
+        <span
+          className={`font-bold text-2xl tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent shadow-sm transition-all duration-300 ${
+            isDarkMode
+              ? "from-blue-400 to-purple-400"
+              : "from-blue-600 to-purple-600"
+          }`}
+        >
+          {" "}
+          CRM Workflow{" "}
+        </span>
       </div>
 
       {/* Navigation Items */}
-      <div className="navbar-items">
-        <button className="navbar-item active">Dashboard</button>
-        <button className="navbar-item">Workflows</button>
-        <button className="navbar-item">Templates</button>
-        <button className="navbar-item">Analytics</button>
-        <button className="navbar-item">Settings</button>
+      <div className="flex items-center gap-6">
+        <button
+          className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+            isDarkMode ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          Dashboard
+        </button>
+        <button
+          className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+            isDarkMode
+              ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+              : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          }`}
+        >
+          Workflows
+        </button>
+        <button
+          className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+            isDarkMode
+              ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+              : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          }`}
+        >
+          Templates
+        </button>
+        <button
+          className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+            isDarkMode
+              ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+              : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          }`}
+        >
+          Analytics
+        </button>
+        <button
+          className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+            isDarkMode
+              ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+              : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          }`}
+        >
+          Settings
+        </button>
       </div>
 
       {/* Right Side - Quick Actions, Notifications & Theme Toggle */}
-      <div className="navbar-right">
+      <div className="flex items-center gap-5">
         {/* Quick Actions Dropdown */}
-        <div className="quick-actions-container">
+        <div className="relative">
           <button
-            className="quick-actions-btn"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none px-5 py-2.5 rounded-full cursor-pointer text-sm font-medium transition-all duration-300 shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/40 whitespace-nowrap"
             onClick={() => setShowQuickActions(!showQuickActions)}
             title="Quick Actions"
           >
@@ -58,17 +111,29 @@ const NavBar = () => {
           </button>
 
           {showQuickActions && (
-            <div className="quick-actions-dropdown">
+            <div
+              className={`absolute top-full right-0 min-w-48 z-50 mt-2 overflow-hidden rounded-lg shadow-xl ${
+                isDarkMode
+                  ? "bg-gray-800 border border-gray-700"
+                  : "bg-white border border-gray-200"
+              }`}
+            >
               {quickActions.map((action, index) => (
                 <button
                   key={index}
-                  className="quick-action-item"
+                  className={`flex items-center gap-3 w-full px-4 py-3 border-none bg-transparent cursor-pointer transition-colors duration-200 text-left ${
+                    isDarkMode
+                      ? "text-gray-300 hover:bg-gray-700 hover:text-white"
+                      : "text-gray-800 hover:bg-gray-100"
+                  }`}
                   onClick={() => {
                     action.action();
                     setShowQuickActions(false);
                   }}
                 >
-                  <span className="action-icon">{action.icon}</span>
+                  <span className="text-base w-5 text-center">
+                    {action.icon}
+                  </span>
                   {action.label}
                 </button>
               ))}
@@ -80,15 +145,25 @@ const NavBar = () => {
         <NotificationBell />
 
         {/* Status Indicator */}
-        <div className="status-indicator">
-          <div className="status-dot"></div>
+        <div
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium ${
+            isDarkMode
+              ? "bg-blue-900 text-blue-300"
+              : "bg-blue-100 text-blue-800"
+          }`}
+        >
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
           Active
         </div>
 
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="theme-toggle"
+          className={`w-10 h-10 rounded-full border-none cursor-pointer flex items-center justify-center text-lg transition-all duration-300 shadow-lg hover:scale-105 ${
+            isDarkMode
+              ? "bg-gray-700 text-yellow-400 shadow-gray-900/30"
+              : "bg-gray-100 text-amber-500 shadow-gray-900/10"
+          }`}
           title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
         >
           {isDarkMode ? (

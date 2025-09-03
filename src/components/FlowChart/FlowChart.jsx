@@ -561,7 +561,7 @@ export default function FlowChart({ onNodeSelect, onNodeDelete, clearAllRef }) {
   );
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div className="w-full h-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}
